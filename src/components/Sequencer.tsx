@@ -1,29 +1,32 @@
 import React, { useEffect } from 'react';
-import useStateRef from 'react-usestateref';
+import { useTracks } from '../contexts/TracksContext';
 import { playSequence } from '../lib/playSequence';
 import Tone from '../lib/tone';
-import { initialPatterns, updatedPatterns } from '../mocks/exampleTracks';
-import { Track } from '../types/sequencer';
-
-const osc1 = new Tone.MonoSynth().toDestination();
-const osc2 = new Tone.FMSynth().toDestination();
-const osc3 = new Tone.AMSynth().toDestination();
-
-const initialTracks: Track[] = [
-  { pattern: initialPatterns[0], instrument: osc1 },
-  { pattern: initialPatterns[1], instrument: osc2 },
-  { pattern: initialPatterns[2], instrument: osc3 },
-];
+import { TRACK_NAME } from '../types/tracks';
 
 function Sequencer(): JSX.Element {
-  const [tracks, setTracks, tracksRef] = useStateRef<Track[]>(initialTracks);
+  const {
+    patternsRef,
+    patternsDispatch,
+    instrumentsRef,
+    updateInstrument,
+  } = useTracks();
 
   useEffect(() => {
     Tone.Transport.scheduleRepeat(
-      (time) => playSequence(tracksRef.current, time),
+      (time) => {
+        if (patternsRef?.current && instrumentsRef?.current) {
+          playSequence(
+            patternsRef.current,
+            instrumentsRef.current,
+            time,
+          );
+        }
+      },
       '16n',
     );
-  }, [tracksRef]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sequencerStart = (): void => {
     if (Tone.context.state !== 'running') {
@@ -38,11 +41,14 @@ function Sequencer(): JSX.Element {
   };
 
   const updateSequence = (): void => {
-    const updatedTracks = tracks.map((track, index) => ({
-      ...track, pattern: updatedPatterns[index],
-    }));
+    patternsDispatch({ type: 'exampleUpdatedPatterns' });
+  };
 
-    setTracks(updatedTracks);
+  const updateInstrumentOnClick = (): void => {
+    updateInstrument(
+      TRACK_NAME.TRACK_A,
+      { oscillator: { type: 'fmsawtooth' } },
+    );
   };
 
   return (
@@ -54,7 +60,6 @@ function Sequencer(): JSX.Element {
         onClick={sequencerStart}
       >
         start
-
       </button>
       <button
         type="button"
@@ -62,7 +67,6 @@ function Sequencer(): JSX.Element {
         onClick={sequencerStop}
       >
         stop
-
       </button>
       <button
         type="button"
@@ -70,7 +74,13 @@ function Sequencer(): JSX.Element {
         onClick={updateSequence}
       >
         update sequence
-
+      </button>
+      <button
+        type="button"
+        className="p-2"
+        onClick={updateInstrumentOnClick}
+      >
+        update instrument
       </button>
     </div>
   );
