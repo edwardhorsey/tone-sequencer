@@ -1,15 +1,20 @@
 {
     "extends": [
         "plugin:react/recommended",
-        "airbnb"
+        "airbnb",
+        "plugin:@typescript-eslint/recommended"
     ],
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
         },
-    "ecmaVersion": 12,
-    "sourceType": "module"
+        "ecmaVersion": 12,
+        "sourceType": "module"
     },
     "plugins": [
         "react",
@@ -17,60 +22,29 @@
         "react-hooks"
     ],
     "rules": {
-        "react/jsx-filename-extension": [
-            2,
-            {
-                "extensions": [
-                    ".js",
-                    ".jsx",
-                    ".ts",
-                    ".tsx"
-                ]
-            }
-        ],
-        "max-len": [
-            "error",
-            { "code": 120 },
-            4,
-            {
-                "ignoreStrings": true,
-                "ignoreTemplateLiterals": true,
-                "ignoreUrls": true
-            }
-        ],
         "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": ["error"],
+        "react/jsx-filename-extension": [ "warn", {"extensions": [".tsx"]} ],
         "import/extensions": [
             "error",
             "ignorePackages",
-            {
-                "js": "never",
-                "jsx": "never",
-                "ts": "never",
-                "tsx": "never"
-            }
+            { "ts": "never", "tsx": "never" }
         ],
-        "react/react-in-jsx-scope": 2,
-        "react/jsx-props-no-spreading": "off",
-        "import/no-extraneous-dependencies": [
-            "error",
-            {
-                "devDependencies": [
-                    ".storybook/**",
-                    "src/stories/**"
-                ]
-            }
-        ],
-        "@typescript-eslint/no-use-before-define": ["error"],
-        // "no-shadow": "off", // for ‘Enum’ is already declared in the upper scope
-        // "@typescript-eslint/no-shadow": ["error"] // for ‘Enum’ is already declared in the upper scope
+        "no-shadow": "off", // for ‘Enum’ is already declared in the upper scope
+        "@typescript-eslint/no-shadow": ["error"], // for ‘Enum’ is already declared in the upper scope
         "@typescript-eslint/explicit-function-return-type": [
             "error",
             { "allowExpressions": true }
         ],
+        "max-len": ["warn", { "code": 80 }],
         "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": "warn",
         "import/prefer-default-export": "off",
-        "react/prop-types": "off",
-        "react/function-component-definition": "off"
+        "react/prop-types": "off"
+    },
+    "settings": {
+        "import/resolver": {
+            "typescript": {}
+        }
     }
 }
