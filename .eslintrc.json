@@ -1,0 +1,76 @@
+{
+    "extends": [
+        "plugin:react/recommended",
+        "airbnb"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "@typescript-eslint",
+        "react-hooks"
+    ],
+    "rules": {
+        "react/jsx-filename-extension": [
+            2,
+            {
+                "extensions": [
+                    ".js",
+                    ".jsx",
+                    ".ts",
+                    ".tsx"
+                ]
+            }
+        ],
+        "max-len": [
+            "error",
+            { "code": 120 },
+            4,
+            {
+                "ignoreStrings": true,
+                "ignoreTemplateLiterals": true,
+                "ignoreUrls": true
+            }
+        ],
+        "no-use-before-define": "off",
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "never",
+                "jsx": "never",
+                "ts": "never",
+                "tsx": "never"
+            }
+        ],
+        "react/react-in-jsx-scope": 2,
+        "react/jsx-props-no-spreading": "off",
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": [
+                    ".storybook/**",
+                    "src/stories/**"
+                ]
+            }
+        ],
+        "@typescript-eslint/no-use-before-define": ["error"],
+        // "no-shadow": "off", // for ‘Enum’ is already declared in the upper scope
+        // "@typescript-eslint/no-shadow": ["error"] // for ‘Enum’ is already declared in the upper scope
+        "@typescript-eslint/explicit-function-return-type": [
+            "error",
+            { "allowExpressions": true }
+        ],
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "import/prefer-default-export": "off",
+        "react/prop-types": "off",
+        "react/function-component-definition": "off"
+    }
+}
