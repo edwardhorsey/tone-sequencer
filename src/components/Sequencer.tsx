@@ -1,44 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useTracks } from '../contexts/TracksContext';
-import { playSequence } from '../lib/playSequence';
-import Tone from '../lib/tone';
+import { useTransport } from '../contexts/TransportContext';
 import { TRACK_NAME } from '../types/tracks';
 
 function Sequencer(): JSX.Element {
-  const {
-    patternsRef,
-    patternsDispatch,
-    instrumentsRef,
-    updateInstrument,
-  } = useTracks();
-
-  useEffect(() => {
-    Tone.Transport.scheduleRepeat(
-      (time) => {
-        if (patternsRef?.current && instrumentsRef?.current) {
-          playSequence(
-            patternsRef.current,
-            instrumentsRef.current,
-            time,
-          );
-        }
-      },
-      '16n',
-    );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const sequencerStart = (): void => {
-    if (Tone.context.state !== 'running') {
-      Tone.context.resume();
-    }
-
-    Tone.Transport.start();
-  };
-
-  const sequencerStop = (): void => {
-    Tone.Transport.stop();
-  };
+  const { patternsDispatch, updateInstrument } = useTracks();
+  const { start, stop } = useTransport();
 
   const updateSequence = (): void => {
     patternsDispatch({ type: 'exampleUpdatedPatterns' });
@@ -57,14 +24,14 @@ function Sequencer(): JSX.Element {
       <button
         type="button"
         className="p-2"
-        onClick={sequencerStart}
+        onClick={start}
       >
         start
       </button>
       <button
         type="button"
         className="p-2"
-        onClick={sequencerStop}
+        onClick={stop}
       >
         stop
       </button>
