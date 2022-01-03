@@ -1,12 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import { TracksProvider } from './contexts/TracksContext';
+import { TransportProvider } from './contexts/TransportContext';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <TracksProvider>
+      <TransportProvider>
+        <App />
+      </TransportProvider>
+    </TracksProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );

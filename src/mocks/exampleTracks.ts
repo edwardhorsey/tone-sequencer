@@ -1,6 +1,6 @@
 import { Pattern } from '../types/sequencer';
 
-export const initialPatterns: Pattern[] = [
+export const mockInitialPatterns: Pattern[] = [
   // eslint-disable-next-line max-len
   [{ pitch: 'C6' }, false, false, false, { pitch: 'A5' }, false, false, { pitch: 'C6' }, false, false, { pitch: 'C6' }, false, { pitch: 'D6' }, false, false, false],
   // eslint-disable-next-line max-len
@@ -8,7 +8,7 @@ export const initialPatterns: Pattern[] = [
   [{ pitch: 'F3' }, false, false],
 ];
 
-export const updatedPatterns: Pattern[] = [
+export const mockUpdatedPatterns: Pattern[] = [
   // eslint-disable-next-line max-len
   [{ pitch: 'B5' }, false, false, false, false, { pitch: 'A5' }, false, false, { pitch: 'B5' }, false, false, { pitch: 'B5' }, false, { pitch: 'C6' }, false, false, false],
   // eslint-disable-next-line max-len
