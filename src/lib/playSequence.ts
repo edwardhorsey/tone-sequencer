@@ -1,22 +1,23 @@
 import { Time } from 'tone/build/esm/core/type/Units';
-import { Instruments, Patterns } from '../types/sequencer';
-import { TrackTitlesArray } from '../types/tracks';
+import { Instruments, Loops } from '../types/sequencer';
+import { TrackNamesArray } from '../types/tracks';
 
 let counter = 0;
 
-export const playSequence = (patterns: Patterns, instruments: Instruments, time: Time): void => {
-    TrackTitlesArray.forEach((track) => {
-        const pattern = patterns[track];
-        const instrument = instruments[track];
+export const playSequence = (loops: Loops, instruments: Instruments, time: Time): void => {
+    TrackNamesArray.forEach((track) => {
+        const loop = loops[track];
 
-        const step = counter % pattern.length;
+        if (loop) {
+            const instrument = instruments[track];
+            const step = counter % loop.length;
+            const currentNote = loop[step];
 
-        const currentNote = pattern[step];
+            if (currentNote) {
+                const { pitch } = currentNote;
 
-        if (currentNote) {
-            const { pitch } = currentNote;
-
-            instrument.triggerAttackRelease(pitch, '16n', time);
+                instrument.triggerAttackRelease(pitch, '16n', time);
+            }
         }
     });
 

@@ -1,6 +1,6 @@
-import { Pattern } from '../types/sequencer';
+import { Loop } from '../types/sequencer';
 
-export const mockInitialPatterns: Pattern[] = [
+export const mockInitialLoops: Loop[] = [
     [
         { pitch: 'C6' },
         false,
@@ -23,7 +23,7 @@ export const mockInitialPatterns: Pattern[] = [
     [{ pitch: 'F3' }, false, false],
 ];
 
-export const mockUpdatedPatterns: Pattern[] = [
+export const mockUpdatedLoops: Loop[] = [
     [
         { pitch: 'C5' },
         false,

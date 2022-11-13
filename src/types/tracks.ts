@@ -4,4 +4,4 @@ export enum TrackNameType {
     SynthC = 'SynthC',
 }
 
-export const TrackTitlesArray = Object.keys(TrackNameType) as TrackNameType[];
+export const TrackNamesArray = Object.keys(TrackNameType) as TrackNameType[];

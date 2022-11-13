@@ -1,43 +1,37 @@
 import { createContext, ReactNode, RefObject, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { emptyFunction } from 'src/lib/misc';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import useReducerWithRef from '../lib/hooks/useReducerWithRef';
-import Tone from '../lib/tone';
-import { mockInitialPatterns, mockUpdatedPatterns } from '../mocks/exampleTracks';
-import { Instruments, Patterns } from '../types/sequencer';
-import { TrackNameType } from '../types/tracks';
-
 import { playSequence } from '../lib/playSequence';
+import Tone from '../lib/tone';
+import { mockInitialLoops, mockUpdatedLoops } from '../mocks/exampleTracks';
+import { Instruments, Loops } from '../types/sequencer';
+import { TrackNameType } from '../types/tracks';
 
 function createSynth() {
     return new Tone.Synth().toDestination();
 }
 
-const initialPatterns: Patterns = {
-    [TrackNameType.SynthA]: mockInitialPatterns[0],
-    [TrackNameType.SynthB]: mockInitialPatterns[1],
-    [TrackNameType.SynthC]: mockInitialPatterns[2],
+const initialLoops: Loops = {
+    [TrackNameType.SynthA]: mockInitialLoops[0],
+    [TrackNameType.SynthB]: mockInitialLoops[1],
+    [TrackNameType.SynthC]: mockInitialLoops[2],
 };
 
-type PatternsState = Patterns;
-type PatternsDispatch = (action: PatternsReducerAction) => void;
-type PatternsReducerAction = { type: 'exampleUpdatedPatterns' };
+type LoopsState = Loops;
+type LoopsDispatch = (action: LoopsReducerAction) => void;
+type LoopsReducerAction = { type: 'exampleUpdatedLoops' };
 
-const patternsReducer = (state: PatternsState, action: PatternsReducerAction): PatternsState => {
+const loopsReducer = (state: LoopsState, action: LoopsReducerAction): LoopsState => {
     switch (action.type) {
-        case 'exampleUpdatedPatterns': {
+        case 'exampleUpdatedLoops': {
             const updated = {
                 [TrackNameType.SynthA]:
-                    state[TrackNameType.SynthA] === mockUpdatedPatterns[0]
-                        ? mockInitialPatterns[0]
-                        : mockUpdatedPatterns[0],
+                    state[TrackNameType.SynthA] === mockUpdatedLoops[0] ? mockInitialLoops[0] : mockUpdatedLoops[0],
                 [TrackNameType.SynthB]:
-                    state[TrackNameType.SynthB] === mockUpdatedPatterns[1]
-                        ? mockInitialPatterns[1]
-                        : mockUpdatedPatterns[1],
+                    state[TrackNameType.SynthB] === mockUpdatedLoops[1] ? mockInitialLoops[1] : mockUpdatedLoops[1],
                 [TrackNameType.SynthC]:
-                    state[TrackNameType.SynthC] === mockUpdatedPatterns[2]
-                        ? mockInitialPatterns[2]
-                        : mockUpdatedPatterns[2],
+                    state[TrackNameType.SynthC] === mockUpdatedLoops[2] ? mockInitialLoops[2] : mockUpdatedLoops[2],
             };
 
             return updated;
@@ -54,21 +48,30 @@ type UpdateInstrument = (
 ) => void;
 
 interface TracksContext {
-    patterns: Patterns;
-    patternsRef: RefObject<Patterns>;
-    patternsDispatch: PatternsDispatch;
-    instrumentsRef: RefObject<Instruments>;
+    loops: Loops;
+    loopsRef: RefObject<Loops> | null;
+    loopsDispatch: LoopsDispatch;
+    instrumentsRef: RefObject<Instruments> | null;
     updateInstrument: UpdateInstrument;
     isPlaying: boolean;
     start: () => void;
     stop: () => void;
 }
 
-export const TracksContext = createContext<TracksContext | null>(null);
+export const TracksContext = createContext<TracksContext>({
+    loops: {},
+    loopsRef: null,
+    loopsDispatch: emptyFunction,
+    instrumentsRef: null,
+    updateInstrument: emptyFunction,
+    isPlaying: false,
+    start: emptyFunction,
+    stop: emptyFunction,
+});
 
 export function TracksProvider(props: { children: ReactNode }): JSX.Element {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [patterns, patternsDispatch, patternsRef] = useReducerWithRef(patternsReducer, initialPatterns);
+    const [loops, loopsDispatch, loopsRef] = useReducerWithRef(loopsReducer, initialLoops);
     const instrumentsRef = useRef<Instruments | null>(null);
     const [initialisedInstruments, setInitialsedInstruments] = useState(false);
 
@@ -97,11 +100,11 @@ export function TracksProvider(props: { children: ReactNode }): JSX.Element {
         Tone.Transport.cancel();
 
         Tone.Transport.scheduleRepeat((time) => {
-            if (patternsRef?.current && instrumentsRef?.current) {
-                playSequence(patternsRef.current, instrumentsRef.current, time);
+            if (loopsRef?.current && instrumentsRef?.current) {
+                playSequence(loopsRef.current, instrumentsRef.current, time);
             }
         }, '16n');
-    }, [patternsRef, instrumentsRef]);
+    }, [loopsRef, instrumentsRef]);
 
     const start = (): void => {
         if (Tone.context.state !== 'running') {
@@ -120,9 +123,9 @@ export function TracksProvider(props: { children: ReactNode }): JSX.Element {
     return (
         <TracksContext.Provider
             value={{
-                patterns,
-                patternsDispatch,
-                patternsRef,
+                loops,
+                loopsDispatch,
+                loopsRef,
                 instrumentsRef,
                 updateInstrument,
                 isPlaying,

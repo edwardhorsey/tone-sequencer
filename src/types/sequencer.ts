@@ -5,10 +5,10 @@ interface Note {
     pitch: string;
 }
 
-export type Pattern = (Note | false)[];
+export type Loop = (Note | false)[];
 
-export type Patterns = {
-    [key in TrackNameType]: Pattern;
+export type Loops = {
+    [key in TrackNameType]?: Loop;
 };
 
 type Instrument = Tone.Synth;
@@ -18,6 +18,6 @@ export type Instruments = {
 };
 
 export interface Track {
-    pattern: Pattern;
+    loops: Loop;
     instrument: Instrument;
 }

@@ -2,10 +2,10 @@ import { useTracks } from '../contexts/TracksContext';
 import { TrackNameType } from '../types/tracks';
 
 function Sequencer(): JSX.Element {
-    const { patternsDispatch, updateInstrument, start, stop } = useTracks();
+    const { loopsDispatch, updateInstrument, start, stop } = useTracks();
 
     const updateSequence = (): void => {
-        patternsDispatch({ type: 'exampleUpdatedPatterns' });
+        loopsDispatch({ type: 'exampleUpdatedLoops' });
     };
 
     const updateInstrumentOnClick = (): void => {
