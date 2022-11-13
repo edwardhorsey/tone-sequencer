@@ -1,5 +1,5 @@
 import Tone from '../lib/tone';
-import { TrackTitle } from './tracks';
+import { TrackNameType } from './tracks';
 
 interface Note {
   pitch: string;
@@ -8,13 +8,13 @@ interface Note {
 export type Pattern = (Note|false)[]
 
 export type Patterns = {
-  [key in TrackTitle]: Pattern;
+  [key in TrackNameType]: Pattern;
 }
 
 type Instrument = Tone.Synth
 
 export type Instruments = {
-  [key in TrackTitle]: Instrument;
+  [key in TrackNameType]: Instrument;
 }
 
 export interface Track {
