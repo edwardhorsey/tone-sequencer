@@ -4,24 +4,21 @@ import { TrackTitlesArray } from '../types/tracks';
 
 let counter = 0;
 
-export const playSequence = (
-  patterns: Patterns,
-  instruments: Instruments,
-  time: Time,
-): void => {
-  TrackTitlesArray.forEach((track) => {
-    const pattern = patterns[track];
-    const instrument = instruments[track];
+export const playSequence = (patterns: Patterns, instruments: Instruments, time: Time): void => {
+    TrackTitlesArray.forEach((track) => {
+        const pattern = patterns[track];
+        const instrument = instruments[track];
 
-    const step = counter % pattern.length;
-    const currentNote = pattern[step];
+        const step = counter % pattern.length;
 
-    if (currentNote) {
-      const { pitch } = currentNote;
+        const currentNote = pattern[step];
 
-      instrument.triggerAttackRelease(pitch, '16n', time);
-    }
-  });
+        if (currentNote) {
+            const { pitch } = currentNote;
 
-  counter += 1;
+            instrument.triggerAttackRelease(pitch, '16n', time);
+        }
+    });
+
+    counter += 1;
 };

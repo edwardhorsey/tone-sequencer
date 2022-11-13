@@ -1,101 +1,138 @@
-/* eslint-disable react/jsx-no-constructed-context-values */
-import React, {
-  createContext, ReactNode,
-  RefObject,
-  useContext, useRef,
-} from 'react';
+import { createContext, ReactNode, RefObject, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import useReducerWithRef from '../lib/hooks/useReducerWithRef';
 import Tone from '../lib/tone';
-import {
-  mockInitialPatterns, mockUpdatedPatterns,
-} from '../mocks/exampleTracks';
+import { mockInitialPatterns, mockUpdatedPatterns } from '../mocks/exampleTracks';
 import { Instruments, Patterns } from '../types/sequencer';
-import { TrackTitle, TRACK_NAME } from '../types/tracks';
+import { TrackNameType } from '../types/tracks';
 
-const { TRACK_A, TRACK_B, TRACK_C } = TRACK_NAME;
+import { playSequence } from '../lib/playSequence';
+
+function createSynth() {
+    return new Tone.Synth().toDestination();
+}
 
 const initialPatterns: Patterns = {
-  [TRACK_A]: mockInitialPatterns[0],
-  [TRACK_B]: mockInitialPatterns[1],
-  [TRACK_C]: mockInitialPatterns[2],
+    [TrackNameType.SynthA]: mockInitialPatterns[0],
+    [TrackNameType.SynthB]: mockInitialPatterns[1],
+    [TrackNameType.SynthC]: mockInitialPatterns[2],
 };
 
 type PatternsState = Patterns;
 type PatternsDispatch = (action: PatternsReducerAction) => void;
-type PatternsReducerAction = { type: 'exampleUpdatedPatterns' }
+type PatternsReducerAction = { type: 'exampleUpdatedPatterns' };
 
-const patternsReducer = (
-  state: PatternsState,
-  action: PatternsReducerAction,
-): PatternsState => {
-  switch (action.type) {
-    case 'exampleUpdatedPatterns': {
-      const updated = {
-        [TRACK_A]: mockUpdatedPatterns[0],
-        [TRACK_B]: mockUpdatedPatterns[1],
-        [TRACK_C]: mockUpdatedPatterns[2],
-      };
+const patternsReducer = (state: PatternsState, action: PatternsReducerAction): PatternsState => {
+    switch (action.type) {
+        case 'exampleUpdatedPatterns': {
+            const updated = {
+                [TrackNameType.SynthA]:
+                    state[TrackNameType.SynthA] === mockUpdatedPatterns[0]
+                        ? mockInitialPatterns[0]
+                        : mockUpdatedPatterns[0],
+                [TrackNameType.SynthB]:
+                    state[TrackNameType.SynthB] === mockUpdatedPatterns[1]
+                        ? mockInitialPatterns[1]
+                        : mockUpdatedPatterns[1],
+                [TrackNameType.SynthC]:
+                    state[TrackNameType.SynthC] === mockUpdatedPatterns[2]
+                        ? mockInitialPatterns[2]
+                        : mockUpdatedPatterns[2],
+            };
 
-      return updated;
+            return updated;
+        }
+        default: {
+            throw new Error(`Action - ${action} - not matched`);
+        }
     }
-    default: {
-      throw new Error(`Action - ${action} - not matched`);
-    }
-  }
 };
 
 type UpdateInstrument = (
-  trackName: TrackTitle,
-  instrumentSettings: RecursivePartial<Tone.SynthOptions>
-) => void
+    instrumentName: TrackNameType,
+    instrumentSettings: RecursivePartial<Tone.SynthOptions>,
+) => void;
 
 interface TracksContext {
-  patterns: Patterns;
-  patternsRef: RefObject<Patterns>;
-  patternsDispatch: PatternsDispatch;
-  instrumentsRef: RefObject<Instruments>;
-  updateInstrument: UpdateInstrument;
+    patterns: Patterns;
+    patternsRef: RefObject<Patterns>;
+    patternsDispatch: PatternsDispatch;
+    instrumentsRef: RefObject<Instruments>;
+    updateInstrument: UpdateInstrument;
+    isPlaying: boolean;
+    start: () => void;
+    stop: () => void;
 }
 
-export const TracksContext = createContext<TracksContext|null>(null);
+export const TracksContext = createContext<TracksContext | null>(null);
 
-export function TracksProvider(props: {
-  children: ReactNode;
-}): JSX.Element {
-  const [patterns, patternsDispatch, patternsRef] = useReducerWithRef(
-    patternsReducer,
-    initialPatterns,
-  );
-  const instrumentsRef = useRef<Instruments>({
-    [TRACK_A]: new Tone.Synth().toDestination(),
-    [TRACK_B]: new Tone.Synth().toDestination(),
-    [TRACK_C]: new Tone.Synth().toDestination(),
-  });
+export function TracksProvider(props: { children: ReactNode }): JSX.Element {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [patterns, patternsDispatch, patternsRef] = useReducerWithRef(patternsReducer, initialPatterns);
+    const instrumentsRef = useRef<Instruments | null>(null);
+    const [initialisedInstruments, setInitialsedInstruments] = useState(false);
 
-  const updateInstrument: UpdateInstrument = (
-    trackName,
-    instrumentSettings,
-  ): void => {
-    instrumentsRef.current[trackName].set(instrumentSettings);
-  };
+    const initialiseInstruments = useCallback(() => {
+        instrumentsRef.current = {
+            [TrackNameType.SynthA]: createSynth(),
+            [TrackNameType.SynthB]: createSynth(),
+            [TrackNameType.SynthC]: createSynth(),
+        };
+    }, []);
 
-  const { children } = props;
-  return (
-    <TracksContext.Provider
-      value={{
-        patterns,
-        patternsDispatch,
-        patternsRef,
-        instrumentsRef,
-        updateInstrument,
-      }}
-    >
-      {children}
-    </TracksContext.Provider>
-  );
+    useEffect(() => {
+        if (!initialisedInstruments) {
+            initialiseInstruments();
+            setInitialsedInstruments(true);
+        }
+    }, [initialisedInstruments, setInitialsedInstruments, initialiseInstruments]);
+
+    const updateInstrument: UpdateInstrument = (trackName, instrumentSettings): void => {
+        if (!instrumentsRef.current) return;
+
+        instrumentsRef.current[trackName].set(instrumentSettings);
+    };
+
+    useEffect(() => {
+        Tone.Transport.cancel();
+
+        Tone.Transport.scheduleRepeat((time) => {
+            if (patternsRef?.current && instrumentsRef?.current) {
+                playSequence(patternsRef.current, instrumentsRef.current, time);
+            }
+        }, '16n');
+    }, [patternsRef, instrumentsRef]);
+
+    const start = (): void => {
+        if (Tone.context.state !== 'running') {
+            Tone.context.resume();
+        }
+
+        Tone.Transport.start();
+        setIsPlaying(true);
+    };
+
+    const stop = (): void => {
+        Tone.Transport.stop();
+        setIsPlaying(false);
+    };
+
+    return (
+        <TracksContext.Provider
+            value={{
+                patterns,
+                patternsDispatch,
+                patternsRef,
+                instrumentsRef,
+                updateInstrument,
+                isPlaying,
+                start,
+                stop,
+            }}
+        >
+            {props.children}
+        </TracksContext.Provider>
+    );
 }
 
-export const useTracks = (): TracksContext => (
-  useContext(TracksContext) as TracksContext
-);
+export const useTracks = (): TracksContext => useContext(TracksContext) as TracksContext;

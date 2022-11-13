@@ -1,0 +1,4 @@
+*.js
+.next
+out
+yarn.lock
