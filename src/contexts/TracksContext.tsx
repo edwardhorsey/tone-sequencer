@@ -1,40 +1,30 @@
 import { createContext, ReactNode, RefObject, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { emptyFunction } from 'src/lib/misc';
+import { SynthOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import useReducerWithRef from '../lib/hooks/useReducerWithRef';
 import { playSequence } from '../lib/playSequence';
 import Tone from '../lib/tone';
-import { mockInitialLoops, mockUpdatedLoops } from '../mocks/exampleTracks';
+import { generateRandomLoop, initialLoops } from '../mocks/exampleTracks';
 import { Instruments, Loops } from '../types/sequencer';
 import { TrackNameType } from '../types/tracks';
 
-function createSynth() {
-    return new Tone.Synth().toDestination();
+function createSynth(options?: RecursivePartial<SynthOptions>) {
+    return new Tone.Synth(options).toDestination();
 }
-
-const initialLoops: Loops = {
-    [TrackNameType.SynthA]: mockInitialLoops[0],
-    [TrackNameType.SynthB]: mockInitialLoops[1],
-    [TrackNameType.SynthC]: mockInitialLoops[2],
-};
 
 type LoopsState = Loops;
 type LoopsDispatch = (action: LoopsReducerAction) => void;
-type LoopsReducerAction = { type: 'exampleUpdatedLoops' };
+type LoopsReducerAction = { type: 'exampleUpdatedLoops' } | { type: 'randomLoops' };
 
 const loopsReducer = (state: LoopsState, action: LoopsReducerAction): LoopsState => {
     switch (action.type) {
-        case 'exampleUpdatedLoops': {
-            const updated = {
-                [TrackNameType.SynthA]:
-                    state[TrackNameType.SynthA] === mockUpdatedLoops[0] ? mockInitialLoops[0] : mockUpdatedLoops[0],
-                [TrackNameType.SynthB]:
-                    state[TrackNameType.SynthB] === mockUpdatedLoops[1] ? mockInitialLoops[1] : mockUpdatedLoops[1],
-                [TrackNameType.SynthC]:
-                    state[TrackNameType.SynthC] === mockUpdatedLoops[2] ? mockInitialLoops[2] : mockUpdatedLoops[2],
+        case 'randomLoops': {
+            return {
+                [TrackNameType.SynthA]: generateRandomLoop(5),
+                [TrackNameType.SynthB]: generateRandomLoop(3),
+                [TrackNameType.SynthC]: generateRandomLoop(2),
             };
-
-            return updated;
         }
         default: {
             throw new Error(`Action - ${action} - not matched`);
@@ -77,9 +67,21 @@ export function TracksProvider(props: { children: ReactNode }): JSX.Element {
 
     const initialiseInstruments = useCallback(() => {
         instrumentsRef.current = {
-            [TrackNameType.SynthA]: createSynth(),
-            [TrackNameType.SynthB]: createSynth(),
-            [TrackNameType.SynthC]: createSynth(),
+            [TrackNameType.SynthA]: createSynth({
+                oscillator: {
+                    type: 'fatsquare',
+                },
+            }),
+            [TrackNameType.SynthB]: createSynth({
+                oscillator: {
+                    type: 'fmsine',
+                },
+            }),
+            [TrackNameType.SynthC]: createSynth({
+                oscillator: {
+                    type: 'fattriangle',
+                },
+            }),
         };
     }, []);
 

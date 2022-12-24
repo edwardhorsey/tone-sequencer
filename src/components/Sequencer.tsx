@@ -6,7 +6,7 @@ function Sequencer(): JSX.Element {
     const { loopsDispatch, updateInstrument, start, stop } = useTracks();
 
     const updateSequence = (): void => {
-        loopsDispatch({ type: 'exampleUpdatedLoops' });
+        loopsDispatch({ type: 'randomLoops' });
     };
 
     const updateInstrumentOnClick = (): void => {

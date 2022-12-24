@@ -1,48 +1,116 @@
-import { Loop } from '../types/sequencer';
+import { Loop, Loops } from '../types/sequencer';
 
-export const mockInitialLoops: Loop[] = [
-    [
-        { pitch: 'C6' },
-        false,
-        false,
-        false,
-        { pitch: 'A5' },
-        false,
-        false,
-        { pitch: 'C6' },
-        false,
-        false,
-        { pitch: 'C6' },
-        false,
-        { pitch: 'D6' },
-        false,
-        false,
-        false,
-    ],
-    [false, { pitch: 'E5' }, { pitch: 'F5' }, false, false, { pitch: 'G5' }, false],
-    [{ pitch: 'F3' }, false, false],
-];
+export function bresenhamEuclidean(onsets: number, totalPulses: number) {
+    const onsetsFixed = onsets + 1;
+    let previous = 0;
+    const pattern = [];
 
-export const mockUpdatedLoops: Loop[] = [
-    [
-        { pitch: 'C5' },
+    for (let i = 0; i < totalPulses; i += 1) {
+        const xVal = Math.floor((onsetsFixed / totalPulses) * i);
+        pattern.push(xVal === previous ? 0 : 1);
+        previous = xVal;
+    }
+
+    return pattern;
+}
+
+export default bresenhamEuclidean;
+
+const pitches = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+export function generateRandomLoop(octave = 3) {
+    const division = Math.round(Math.random() * 15) + 2;
+    const onset = Math.floor(division / 2);
+    const euclideanRhythm = bresenhamEuclidean(onset, division);
+
+    const loop: Loop = euclideanRhythm.map((note) => {
+        if (note === 0) {
+            return false;
+        }
+
+        const pitch = pitches[Math.round(Math.random() * (pitches.length - 1))] + String(octave);
+
+        return { pitch };
+    });
+
+    return loop;
+}
+
+export const initialLoops: Loops = {
+    SynthA: [
         false,
         false,
-        false,
-        false,
-        { pitch: 'A5' },
-        false,
-        false,
-        { pitch: 'F#5' },
-        false,
-        false,
-        { pitch: 'B5' },
-        false,
-        { pitch: 'C4' },
-        false,
-        false,
-        false,
+        {
+            pitch: 'C#5',
+        },
     ],
-    [false, { pitch: 'C5' }, { pitch: 'D5' }, false, false, { pitch: 'E5' }, false],
-    [{ pitch: 'A3' }, false, false],
-];
+    SynthB: [
+        false,
+        false,
+        {
+            pitch: 'Bb3',
+        },
+        false,
+        {
+            pitch: 'Gb3',
+        },
+        false,
+        {
+            pitch: 'C3',
+        },
+        false,
+        {
+            pitch: 'Bb3',
+        },
+        {
+            pitch: 'Ab3',
+        },
+        false,
+        {
+            pitch: 'A3',
+        },
+        false,
+        {
+            pitch: 'C#3',
+        },
+        false,
+        {
+            pitch: 'F3',
+        },
+    ],
+    SynthC: [
+        false,
+        false,
+        {
+            pitch: 'Bb2',
+        },
+        false,
+        {
+            pitch: 'A2',
+        },
+        false,
+        {
+            pitch: 'Eb2',
+        },
+        false,
+        {
+            pitch: 'G2',
+        },
+        false,
+        {
+            pitch: 'Ab2',
+        },
+        false,
+        {
+            pitch: 'D2',
+        },
+        false,
+        {
+            pitch: 'D2',
+        },
+        false,
+        {
+            pitch: 'E2',
+        },
+    ],
+};
