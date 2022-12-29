@@ -1,15 +1,14 @@
+import { Track } from '@lib/types/sequencer';
 import { Time } from 'tone/build/esm/core/type/Units';
-import { Instruments, Loops } from '../types/sequencer';
-import { TrackNamesArray } from '../types/tracks';
 
 let counter = 0;
 
-export const playSequence = (loops: Loops, instruments: Instruments, time: Time): void => {
-    TrackNamesArray.forEach((track) => {
-        const loop = loops[track];
+export const playSequenceInStore = (tracks: Track[], time: Time): void => {
+    tracks.forEach((track) => {
+        const { loop } = track;
 
         if (loop) {
-            const instrument = instruments[track];
+            const { instrument } = track;
             const step = counter % loop.length;
             const currentNote = loop[step];
 

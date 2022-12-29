@@ -1,4 +1,7 @@
-import { Loop, Loops } from '../types/sequencer';
+import { Loop } from '@lib/types/sequencer';
+import { TrackNameType } from '@lib/types/tracks';
+import { SynthOptions } from 'tone';
+import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 
 export function bresenhamEuclidean(onsets: number, totalPulses: number) {
     const onsetsFixed = onsets + 1;
@@ -36,38 +39,36 @@ export function generateRandomLoop(octave = 3) {
     return loop;
 }
 
-export const initialLoops: Loops = {
+export const initialLoops: {
+    [key in TrackNameType]: Loop;
+} = {
     SynthA: [
         false,
         false,
         {
-            pitch: 'C#5',
+            pitch: 'G5',
+        },
+        {
+            pitch: 'C5',
+        },
+        false,
+        {
+            pitch: 'G5',
         },
     ],
     SynthB: [
         false,
         false,
         {
-            pitch: 'Bb3',
-        },
-        false,
-        {
-            pitch: 'Gb3',
-        },
-        false,
-        {
-            pitch: 'C3',
-        },
-        false,
-        {
-            pitch: 'Bb3',
-        },
-        {
-            pitch: 'Ab3',
-        },
-        false,
-        {
             pitch: 'A3',
+        },
+        false,
+        {
+            pitch: 'F3',
+        },
+        false,
+        {
+            pitch: 'F3',
         },
         false,
         {
@@ -75,14 +76,26 @@ export const initialLoops: Loops = {
         },
         false,
         {
-            pitch: 'F3',
+            pitch: 'G3',
+        },
+        false,
+        {
+            pitch: 'Eb3',
+        },
+        false,
+        {
+            pitch: 'Gb3',
         },
     ],
     SynthC: [
         false,
         false,
         {
-            pitch: 'Bb2',
+            pitch: 'A2',
+        },
+        false,
+        {
+            pitch: 'Gb2',
         },
         false,
         {
@@ -90,15 +103,11 @@ export const initialLoops: Loops = {
         },
         false,
         {
-            pitch: 'Eb2',
+            pitch: 'A2',
         },
         false,
         {
-            pitch: 'G2',
-        },
-        false,
-        {
-            pitch: 'Ab2',
+            pitch: 'F2',
         },
         false,
         {
@@ -106,11 +115,31 @@ export const initialLoops: Loops = {
         },
         false,
         {
-            pitch: 'D2',
+            pitch: 'A2',
         },
         false,
         {
-            pitch: 'E2',
+            pitch: 'Bb2',
         },
     ],
+};
+
+export const initialInstrumentsConfig: {
+    [key in TrackNameType]: RecursivePartial<SynthOptions>;
+} = {
+    [TrackNameType.SynthA]: {
+        oscillator: {
+            type: 'fattriangle',
+        },
+    },
+    [TrackNameType.SynthB]: {
+        oscillator: {
+            type: 'fmsine',
+        },
+    },
+    [TrackNameType.SynthC]: {
+        oscillator: {
+            type: 'fmsine',
+        },
+    },
 };

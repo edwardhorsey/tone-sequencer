@@ -1,17 +1,20 @@
-import { useTracks } from '../contexts/TracksContext';
-import { TrackNameType } from '../types/tracks';
-import DisplayLoops from './DisplayLoops';
+import dynamic from 'next/dynamic';
+import useTrackStore from 'src/stores/useTrackStore';
+import shallow from 'zustand/shallow';
+
+const Tracks = dynamic(() => import('@components/Tracks'), {
+    ssr: false,
+});
 
 function Sequencer(): JSX.Element {
-    const { loopsDispatch, updateInstrument, start, stop } = useTracks();
-
-    const updateSequence = (): void => {
-        loopsDispatch({ type: 'randomLoops' });
-    };
-
-    const updateInstrumentOnClick = (): void => {
-        updateInstrument(TrackNameType.SynthA, { oscillator: { type: 'fmsawtooth' } });
-    };
+    const { start, stop, randomiseLoops } = useTrackStore(
+        (state) => ({
+            start: state.start,
+            stop: state.stop,
+            randomiseLoops: state.randomiseLoops,
+        }),
+        shallow,
+    );
 
     return (
         <div>
@@ -23,15 +26,12 @@ function Sequencer(): JSX.Element {
                 <button type="button" className="p-2" onClick={stop}>
                     stop
                 </button>
-                <button type="button" className="p-2" onClick={updateSequence}>
+                <button type="button" className="p-2" onClick={randomiseLoops}>
                     update sequence
-                </button>
-                <button type="button" className="p-2" onClick={updateInstrumentOnClick}>
-                    update instrument
                 </button>
             </div>
 
-            <DisplayLoops />
+            <Tracks />
         </div>
     );
 }

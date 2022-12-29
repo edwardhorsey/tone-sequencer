@@ -1,5 +1,5 @@
-import Tone from '../lib/tone';
-import { TrackNameType } from './tracks';
+import Tone from '@lib/tone';
+import { TrackNameType } from '@lib/types/tracks';
 
 interface Note {
     pitch: string;
@@ -11,13 +11,14 @@ export type Loops = {
     [key in TrackNameType]?: Loop;
 };
 
-type Instrument = Tone.Synth;
+export type Instrument = Tone.Synth;
 
 export type Instruments = {
     [key in TrackNameType]: Instrument;
 };
 
 export interface Track {
-    loops: Loop;
+    id: TrackNameType;
     instrument: Instrument;
+    loop: Loop;
 }
