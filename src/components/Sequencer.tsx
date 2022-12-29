@@ -1,56 +1,39 @@
-import React from 'react';
-import { useTracks } from '../contexts/TracksContext';
-import { useTransport } from '../contexts/TransportContext';
-import { TRACK_NAME } from '../types/tracks';
+import dynamic from 'next/dynamic';
+import useTrackStore from 'src/stores/useTrackStore';
+import shallow from 'zustand/shallow';
+
+const Tracks = dynamic(() => import('@components/Tracks'), {
+    ssr: false,
+});
 
 function Sequencer(): JSX.Element {
-  const { patternsDispatch, updateInstrument } = useTracks();
-  const { start, stop } = useTransport();
-
-  const updateSequence = (): void => {
-    patternsDispatch({ type: 'exampleUpdatedPatterns' });
-  };
-
-  const updateInstrumentOnClick = (): void => {
-    updateInstrument(
-      TRACK_NAME.TRACK_A,
-      { oscillator: { type: 'fmsawtooth' } },
+    const { start, stop, randomiseLoops } = useTrackStore(
+        (state) => ({
+            start: state.start,
+            stop: state.stop,
+            randomiseLoops: state.randomiseLoops,
+        }),
+        shallow,
     );
-  };
 
-  return (
-    <div>
-      <h1 className="text-center">Sequencer</h1>
-      <button
-        type="button"
-        className="p-2"
-        onClick={start}
-      >
-        start
-      </button>
-      <button
-        type="button"
-        className="p-2"
-        onClick={stop}
-      >
-        stop
-      </button>
-      <button
-        type="button"
-        className="p-2"
-        onClick={updateSequence}
-      >
-        update sequence
-      </button>
-      <button
-        type="button"
-        className="p-2"
-        onClick={updateInstrumentOnClick}
-      >
-        update instrument
-      </button>
-    </div>
-  );
+    return (
+        <div>
+            <div>
+                <h1 className="text-center">Sequencer</h1>
+                <button type="button" className="p-2" onClick={start}>
+                    start
+                </button>
+                <button type="button" className="p-2" onClick={stop}>
+                    stop
+                </button>
+                <button type="button" className="p-2" onClick={randomiseLoops}>
+                    update sequence
+                </button>
+            </div>
+
+            <Tracks />
+        </div>
+    );
 }
 
 export default Sequencer;
