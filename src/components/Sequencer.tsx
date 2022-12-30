@@ -26,9 +26,6 @@ function Sequencer(): JSX.Element {
                 <button type="button" className="p-2" onClick={stop}>
                     stop
                 </button>
-                <button type="button" className="p-2" onClick={randomiseLoops}>
-                    update sequence
-                </button>
             </div>
 
             <Tracks />

@@ -1,6 +1,6 @@
 import { playSequenceInStore } from '@lib/playSequence';
 import Tone from '@lib/tone';
-import { Track } from '@lib/types/sequencer';
+import { Loop, Track } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
 import { generateRandomLoop, initialInstrumentsConfig, initialLoops } from '@mocks/exampleTracks';
 import { SynthOptions } from 'tone';
@@ -20,6 +20,7 @@ export interface TrackStore {
     stop: () => void;
     randomiseLoops: () => void;
     updateInstrument: (trackId: TrackNameType, config: RecursivePartial<Tone.SynthOptions>) => void;
+    updateLoop: (trackId: TrackNameType, loop: Loop) => void;
 }
 
 const initialiseTracks = () => {
@@ -96,6 +97,20 @@ const useTrackStore = create<TrackStore>((set, get) => ({
 
             if (trackToUpdate) {
                 trackToUpdate.instrument.set(config);
+
+                return { ...state, tracks };
+            }
+
+            return state;
+        });
+    },
+    updateLoop: (trackId: TrackNameType, loop: Loop) => {
+        set((state) => {
+            const tracks = [...state.tracks];
+            const trackToUpdate = tracks.find((track: any) => track.id === trackId);
+
+            if (trackToUpdate) {
+                trackToUpdate.loop = loop;
 
                 return { ...state, tracks };
             }
