@@ -21,6 +21,10 @@ export default bresenhamEuclidean;
 
 const pitches = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
+export const pitchesByOctaves: string[] = ['5', '4', '3', '2'].reduce((acc: string[], octave) => {
+    return acc.concat(pitches.map((pitch) => `${pitch}${octave}`));
+}, []);
+
 export function generateRandomLoop(octave = 3) {
     const division = Math.round(Math.random() * 15) + 2;
     const onset = Math.floor(division / 2);
@@ -131,15 +135,30 @@ export const initialInstrumentsConfig: {
         oscillator: {
             type: 'fattriangle',
         },
+        envelope: {
+            attack: 0.001,
+            decay: 0.2,
+            sustain: 0.3,
+        },
     },
     [TrackNameType.SynthB]: {
         oscillator: {
             type: 'fmsine',
         },
+        envelope: {
+            attack: 0.005,
+            decay: 0.2,
+            sustain: 0.1,
+        },
     },
     [TrackNameType.SynthC]: {
         oscillator: {
             type: 'fmsine',
+        },
+        envelope: {
+            attack: 0.002,
+            decay: 0.2,
+            sustain: 0.05,
         },
     },
 };

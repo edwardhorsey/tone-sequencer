@@ -8,10 +8,12 @@ import {
 } from '@lib/envelopeHelpers';
 import { randomBetween } from '@lib/misc';
 import { generateRandomLoop } from '@mocks/exampleTracks';
+import { useMemo } from 'react';
 import useTrackStore from 'src/stores/useTrackStore';
 import { OmniOscillatorOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import shallow from 'zustand/shallow';
+import { PitchOptions } from './PitchOptions';
 
 const omniOscillatorTypes = [
     'fatsine',
@@ -35,13 +37,15 @@ export default function Tracks() {
         shallow,
     );
 
+    const pitchOptions = useMemo(() => <PitchOptions />, []);
+
     return (
         <section className="flex flex-col items-start w-full">
             {tracks.map((track) => {
                 return (
                     <article className="flex flex-col gap-2" key={track.id}>
                         <div>
-                            <h2 className="mr-2">{track.id}</h2>
+                            <h2 className="mr-2 font-bold">{track.id}</h2>
 
                             <label>
                                 <span>Oscillator</span>
@@ -130,15 +134,25 @@ export default function Tracks() {
 
                         <div className="flex">
                             <div className="flex-1 flex">
-                                {track.loop.map((step) =>
-                                    step ? (
-                                        <span className="flex justify-center items-center border border-green-400 w-10 h-6 p-1">
-                                            {step.pitch}
-                                        </span>
-                                    ) : (
-                                        <span className="flex justify-center items-center border border-green-400 w-10 h-6 p-1" />
-                                    ),
-                                )}
+                                {track.loop.map((step, idx, array) => {
+                                    return (
+                                        <div key={`${step}.${idx}`} className="flex flex-col">
+                                            <select
+                                                className="flex justify-center items-center border border-green-400 w-14 h-10 p-1 text-sm"
+                                                defaultValue={step ? step.pitch : undefined}
+                                                onChange={(event) => {
+                                                    const value = event.target.value;
+                                                    const newLoop = [...array];
+                                                    newLoop[idx] = value !== '--' ? { pitch: value } : false;
+
+                                                    updateLoop(track.id, newLoop);
+                                                }}
+                                            >
+                                                {pitchOptions}
+                                            </select>
+                                        </div>
+                                    );
+                                })}
                                 <div className="ml-auto">
                                     <button
                                         className="ml-2"
