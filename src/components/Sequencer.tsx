@@ -7,7 +7,7 @@ const Tracks = dynamic(() => import('@components/Tracks'), {
 });
 
 function Sequencer(): JSX.Element {
-    const { start, stop, randomiseLoops } = useTrackStore(
+    const { start, stop } = useTrackStore(
         (state) => ({
             start: state.start,
             stop: state.stop,

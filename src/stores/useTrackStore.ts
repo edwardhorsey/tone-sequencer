@@ -3,6 +3,7 @@ import Tone from '@lib/tone';
 import { Loop, Track } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
 import { generateRandomLoop, initialInstrumentsConfig, initialLoops } from '@mocks/exampleTracks';
+import merge from 'lodash/merge';
 import { SynthOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import create from 'zustand';
@@ -28,16 +29,19 @@ const initialiseTracks = () => {
         const tracks: Track[] = [
             {
                 id: TrackNameType.SynthA,
+                instrumentConfig: initialInstrumentsConfig[TrackNameType.SynthA],
                 instrument: createSynth(initialInstrumentsConfig[TrackNameType.SynthA]),
                 loop: initialLoops[TrackNameType.SynthA],
             },
             {
                 id: TrackNameType.SynthB,
+                instrumentConfig: initialInstrumentsConfig[TrackNameType.SynthB],
                 instrument: createSynth(initialInstrumentsConfig[TrackNameType.SynthB]),
                 loop: initialLoops[TrackNameType.SynthB],
             },
             {
                 id: TrackNameType.SynthC,
+                instrumentConfig: initialInstrumentsConfig[TrackNameType.SynthC],
                 instrument: createSynth(initialInstrumentsConfig[TrackNameType.SynthC]),
                 loop: initialLoops[TrackNameType.SynthC],
             },
@@ -49,7 +53,7 @@ const initialiseTracks = () => {
     return [];
 };
 
-const useTrackStore = create<TrackStore>((set, get) => ({
+const useTrackStore = create<TrackStore>()((set, get) => ({
     tracks: initialiseTracks(),
     isPlaying: false,
     initialised: false,
@@ -92,10 +96,13 @@ const useTrackStore = create<TrackStore>((set, get) => ({
     },
     updateInstrument: (trackId: TrackNameType, config: RecursivePartial<Tone.SynthOptions>) => {
         set((state) => {
-            const tracks = state.tracks;
+            const tracks = [...state.tracks];
             const trackToUpdate = tracks.find((track) => track.id === trackId);
 
             if (trackToUpdate) {
+                trackToUpdate.instrumentConfig = merge(trackToUpdate.instrumentConfig, config);
+
+                // Update Tone.js instrument
                 trackToUpdate.instrument.set(config);
 
                 return { ...state, tracks };

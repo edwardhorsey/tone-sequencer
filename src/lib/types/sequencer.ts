@@ -1,5 +1,7 @@
 import Tone from '@lib/tone';
 import { TrackNameType } from '@lib/types/tracks';
+import { SynthOptions } from 'tone';
+import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 
 interface Note {
     pitch: string;
@@ -19,6 +21,7 @@ export type Instruments = {
 
 export interface Track {
     id: TrackNameType;
+    instrumentConfig: RecursivePartial<SynthOptions>;
     instrument: Instrument;
     loop: Loop;
 }
