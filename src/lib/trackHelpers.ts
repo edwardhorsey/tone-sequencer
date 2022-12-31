@@ -1,7 +1,5 @@
-import { Loop } from '@lib/types/sequencer';
+import { InstrumentConfig, Loop } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
-import { SynthOptions } from 'tone';
-import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 
 export function bresenhamEuclidean(onsets: number, totalPulses: number) {
     const onsetsFixed = onsets + 1;
@@ -49,12 +47,8 @@ export const initialLoops: {
     SynthA: [
         false,
         false,
-        {
-            pitch: 'G5',
-        },
-        {
-            pitch: 'C5',
-        },
+        false,
+        false,
         false,
         {
             pitch: 'G5',
@@ -64,38 +58,27 @@ export const initialLoops: {
         false,
         false,
         {
-            pitch: 'A3',
-        },
-        false,
-        {
-            pitch: 'F3',
-        },
-        false,
-        {
-            pitch: 'F3',
-        },
-        false,
-        {
-            pitch: 'C#3',
+            pitch: 'Eb3',
         },
         false,
         {
             pitch: 'G3',
         },
-        false,
         {
             pitch: 'Eb3',
         },
         false,
         {
-            pitch: 'Gb3',
+            pitch: 'Bb3',
         },
     ],
     SynthC: [
         false,
-        false,
         {
-            pitch: 'A2',
+            pitch: 'C4',
+        },
+        {
+            pitch: 'C2',
         },
         false,
         {
@@ -129,36 +112,45 @@ export const initialLoops: {
 };
 
 export const initialInstrumentsConfig: {
-    [key in TrackNameType]: RecursivePartial<SynthOptions>;
+    [key in TrackNameType]: InstrumentConfig;
 } = {
     [TrackNameType.SynthA]: {
-        oscillator: {
-            type: 'fattriangle',
+        synthOptions: {
+            oscillator: {
+                type: 'fattriangle',
+            },
+            envelope: {
+                attack: 0.001,
+                decay: 0.2,
+                sustain: 0.3,
+            },
         },
-        envelope: {
-            attack: 0.001,
-            decay: 0.2,
-            sustain: 0.3,
-        },
+        gain: 90,
     },
     [TrackNameType.SynthB]: {
-        oscillator: {
-            type: 'fmsine',
+        synthOptions: {
+            oscillator: {
+                type: 'fmsine',
+            },
+            envelope: {
+                attack: 0.001,
+                decay: 0.157,
+                sustain: 0,
+            },
         },
-        envelope: {
-            attack: 0.005,
-            decay: 0.2,
-            sustain: 0.1,
-        },
+        gain: 90,
     },
     [TrackNameType.SynthC]: {
-        oscillator: {
-            type: 'fmsine',
+        synthOptions: {
+            oscillator: {
+                type: 'fmsine',
+            },
+            envelope: {
+                attack: 0.001,
+                decay: 0.2,
+                sustain: 0.1,
+            },
         },
-        envelope: {
-            attack: 0.002,
-            decay: 0.2,
-            sustain: 0.05,
-        },
+        gain: 90,
     },
 };

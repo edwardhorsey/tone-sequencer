@@ -4,10 +4,10 @@ import {
     calculatePercentageFromAttackValue,
     calculatePercentageFromDecayValue,
     calculatePercentageFromSustainValue,
-    calculateSustainValueFromPercentage,
+    calculateSustainValueFromPercentage
 } from '@lib/envelopeHelpers';
 import { randomBetween } from '@lib/misc';
-import { generateRandomLoop } from '@mocks/exampleTracks';
+import { generateRandomLoop } from '@lib/trackHelpers';
 import { useMemo } from 'react';
 import useTrackStore from 'src/stores/useTrackStore';
 import { OmniOscillatorOptions } from 'tone';
@@ -56,8 +56,10 @@ export default function Tracks() {
 
                                         if (value) {
                                             updateInstrument(track.id, {
-                                                oscillator: {
-                                                    type: event.target.value,
+                                                synthOptions: {
+                                                    oscillator: {
+                                                        type: event.target.value,
+                                                    },
                                                 } as RecursivePartial<OmniOscillatorOptions>,
                                             });
                                         }
@@ -84,7 +86,9 @@ export default function Tracks() {
 
                                         if (value >= 0) {
                                             updateInstrument(track.id, {
-                                                envelope: { attack },
+                                                synthOptions: {
+                                                    envelope: { attack },
+                                                },
                                             });
                                         }
                                     }}
@@ -104,7 +108,9 @@ export default function Tracks() {
 
                                         if (value >= 0) {
                                             updateInstrument(track.id, {
-                                                envelope: { decay },
+                                                synthOptions: {
+                                                    envelope: { decay },
+                                                },
                                             });
                                         }
                                     }}
@@ -124,7 +130,9 @@ export default function Tracks() {
 
                                         if (value >= 0) {
                                             updateInstrument(track.id, {
-                                                envelope: { sustain },
+                                                synthOptions: {
+                                                    envelope: { sustain },
+                                                },
                                             });
                                         }
                                     }}

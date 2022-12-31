@@ -1,15 +1,13 @@
 import { playSequenceInStore } from '@lib/playSequence';
 import Tone from '@lib/tone';
-import { Loop, Track } from '@lib/types/sequencer';
+import { generateRandomLoop, initialInstrumentsConfig, initialLoops } from '@lib/trackHelpers';
+import { InstrumentConfig, Loop, Track } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
-import { generateRandomLoop, initialInstrumentsConfig, initialLoops } from '@mocks/exampleTracks';
 import merge from 'lodash/merge';
-import { SynthOptions } from 'tone';
-import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import create from 'zustand';
 
-function createSynth(options?: RecursivePartial<SynthOptions>) {
-    return new Tone.Synth(options).toDestination();
+function createSynth(options?: InstrumentConfig) {
+    return new Tone.Synth(options?.synthOptions).toDestination();
 }
 
 export interface TrackStore {
@@ -20,7 +18,7 @@ export interface TrackStore {
     start: () => void;
     stop: () => void;
     randomiseLoops: () => void;
-    updateInstrument: (trackId: TrackNameType, config: RecursivePartial<Tone.SynthOptions>) => void;
+    updateInstrument: (trackId: TrackNameType, config: Partial<InstrumentConfig>) => void;
     updateLoop: (trackId: TrackNameType, loop: Loop) => void;
 }
 
@@ -94,7 +92,7 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
             tracks: state.tracks.map((track) => ({ ...track, loop: randomLoops[track.id] })),
         }));
     },
-    updateInstrument: (trackId: TrackNameType, config: RecursivePartial<Tone.SynthOptions>) => {
+    updateInstrument: (trackId: TrackNameType, config: Partial<InstrumentConfig>) => {
         set((state) => {
             const tracks = [...state.tracks];
             const trackToUpdate = tracks.find((track) => track.id === trackId);
@@ -103,7 +101,7 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
                 trackToUpdate.instrumentConfig = merge(trackToUpdate.instrumentConfig, config);
 
                 // Update Tone.js instrument
-                trackToUpdate.instrument.set(config);
+                trackToUpdate.instrument.set(trackToUpdate.instrumentConfig.synthOptions);
 
                 return { ...state, tracks };
             }

@@ -1,4 +1,4 @@
-import { pitchesByOctaves } from '@mocks/exampleTracks';
+import { pitchesByOctaves } from '@lib/trackHelpers';
 
 export function PitchOptions() {
     return (

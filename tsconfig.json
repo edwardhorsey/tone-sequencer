@@ -18,7 +18,6 @@
         "paths": {
             "@components/*": ["src/components/*"],
             "@lib/*": ["src/lib/*"],
-            "@mocks/*": ["src/mocks/*"],
             "@hooks/*": ["src/lib/hooks/*"],
             "@config": ["config/index"]
         }
