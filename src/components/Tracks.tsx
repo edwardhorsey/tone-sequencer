@@ -42,15 +42,20 @@ export default function Tracks() {
     return (
         <section className="flex flex-col items-start w-full">
             {tracks.map((track) => {
-                return (
-                    <article className="flex flex-col gap-2" key={track.id}>
-                        <div>
-                            <h2 className="mr-2 font-bold">{track.id}</h2>
+                const muted = track.instrumentConfig.gain === 0;
 
+                return (
+                    <article className="flex flex-col gap-2 w-full mb-8" key={track.id}>
+                        <h2 className="mr-2 font-bold">{track.id}</h2>
+
+                        <div className="flex justify-between">
                             <label>
                                 <span>Oscillator</span>
                                 <select
-                                    defaultValue={track.instrument.oscillator.type}
+                                    defaultValue={
+                                        track.instrumentConfig.synthOptions.oscillator?.type ??
+                                        track.instrument.synth.oscillator.type
+                                    }
                                     onChange={(event) => {
                                         const value = event.target.value;
 
@@ -78,7 +83,10 @@ export default function Tracks() {
                                 <input
                                     type="range"
                                     defaultValue={calculatePercentageFromAttackValue(
-                                        Number(track.instrument.envelope.attack),
+                                        Number(
+                                            track.instrumentConfig.synthOptions?.envelope?.attack ??
+                                                track.instrument.synth.envelope.attack,
+                                        ),
                                     )}
                                     onChange={(event) => {
                                         const value = Number(event.target.value);
@@ -100,7 +108,10 @@ export default function Tracks() {
                                 <input
                                     type="range"
                                     defaultValue={calculatePercentageFromDecayValue(
-                                        Number(track.instrument.envelope.decay),
+                                        Number(
+                                            track.instrumentConfig.synthOptions?.envelope?.decay ??
+                                                track.instrument.synth.envelope.decay,
+                                        ),
                                     )}
                                     onChange={(event) => {
                                         const value = Number(event.target.value);
@@ -122,7 +133,8 @@ export default function Tracks() {
                                 <input
                                     type="range"
                                     defaultValue={calculatePercentageFromSustainValue(
-                                        track.instrument.envelope.sustain,
+                                        track.instrumentConfig.synthOptions?.envelope?.sustain ??
+                                            track.instrument.synth.envelope.sustain,
                                     )}
                                     onChange={(event) => {
                                         const value = Number(event.target.value);
@@ -138,6 +150,17 @@ export default function Tracks() {
                                     }}
                                 />
                             </label>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    updateInstrument(track.id, {
+                                        gain: muted ? 0.9 : 0,
+                                    });
+                                }}
+                            >
+                                {muted ? 'Unmute' : 'Mute'}
+                            </button>
                         </div>
 
                         <div className="flex">

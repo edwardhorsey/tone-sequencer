@@ -7,7 +7,10 @@ import merge from 'lodash/merge';
 import create from 'zustand';
 
 function createSynth(options?: InstrumentConfig) {
-    return new Tone.Synth(options?.synthOptions).toDestination();
+    const gain = new Tone.Gain(options?.gain).toDestination();
+    const synth = new Tone.Synth(options?.synthOptions).connect(gain);
+
+    return { gain, synth };
 }
 
 export interface TrackStore {
@@ -100,8 +103,9 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
             if (trackToUpdate) {
                 trackToUpdate.instrumentConfig = merge(trackToUpdate.instrumentConfig, config);
 
-                // Update Tone.js instrument
-                trackToUpdate.instrument.set(trackToUpdate.instrumentConfig.synthOptions);
+                // Update Tone.js instruments
+                trackToUpdate.instrument.synth.set(trackToUpdate.instrumentConfig.synthOptions);
+                trackToUpdate.instrument.gain.gain.rampTo(trackToUpdate.instrumentConfig.gain);
 
                 return { ...state, tracks };
             }

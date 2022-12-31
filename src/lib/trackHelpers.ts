@@ -125,7 +125,7 @@ export const initialInstrumentsConfig: {
                 sustain: 0.3,
             },
         },
-        gain: 90,
+        gain: 0.9,
     },
     [TrackNameType.SynthB]: {
         synthOptions: {
@@ -138,7 +138,7 @@ export const initialInstrumentsConfig: {
                 sustain: 0,
             },
         },
-        gain: 90,
+        gain: 0.9,
     },
     [TrackNameType.SynthC]: {
         synthOptions: {
@@ -151,6 +151,6 @@ export const initialInstrumentsConfig: {
                 sustain: 0.1,
             },
         },
-        gain: 90,
+        gain: 0.9,
     },
 };

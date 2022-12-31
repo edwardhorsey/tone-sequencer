@@ -15,7 +15,7 @@ export const playSequenceInStore = (tracks: Track[], time: Time): void => {
             if (currentNote) {
                 const { pitch } = currentNote;
 
-                instrument.triggerAttackRelease(pitch, '16n', time);
+                instrument.synth.triggerAttackRelease(pitch, '16n', time);
             }
         }
     });
