@@ -1,16 +1,23 @@
 import { playSequenceInStore } from '@lib/playSequence';
 import Tone from '@lib/tone';
-import { generateRandomLoop, initialInstrumentsConfig, initialLoops } from '@lib/trackHelpers';
-import { InstrumentConfig, Loop, Track } from '@lib/types/sequencer';
-import { TrackNameType } from '@lib/types/tracks';
+import { initialLoops, initialSamplerConfig, initialSynthConfig } from '@lib/trackHelpers';
+import { Loop, SamplerConfig, SynthConfig, Track } from '@lib/types/sequencer';
+import { InstrumentType, TrackNameType } from '@lib/types/tracks';
 import merge from 'lodash/merge';
 import create from 'zustand';
 
-function createSynth(options?: InstrumentConfig) {
+function createSynth(options?: SynthConfig) {
     const gain = new Tone.Gain(options?.gain).toDestination();
     const synth = new Tone.Synth(options?.synthOptions).connect(gain);
 
     return { gain, synth };
+}
+
+function createSampler(options?: SamplerConfig) {
+    const gain = new Tone.Gain(options?.gain).toDestination();
+    const sampler = new Tone.Sampler(options?.samplerOptions.urls).connect(gain);
+
+    return { gain, sampler };
 }
 
 export interface TrackStore {
@@ -20,8 +27,7 @@ export interface TrackStore {
     initialise: () => void;
     start: () => void;
     stop: () => void;
-    randomiseLoops: () => void;
-    updateInstrument: (trackId: TrackNameType, config: Partial<InstrumentConfig>) => void;
+    updateInstrument: (trackId: TrackNameType, config: Partial<SynthConfig>) => void;
     updateLoop: (trackId: TrackNameType, loop: Loop) => void;
 }
 
@@ -30,21 +36,31 @@ const initialiseTracks = () => {
         const tracks: Track[] = [
             {
                 id: TrackNameType.SynthA,
-                instrumentConfig: initialInstrumentsConfig[TrackNameType.SynthA],
-                instrument: createSynth(initialInstrumentsConfig[TrackNameType.SynthA]),
+                instrumentType: InstrumentType.Synth,
+                instrumentConfig: initialSynthConfig[TrackNameType.SynthA],
+                instrument: createSynth(initialSynthConfig[TrackNameType.SynthA]),
                 loop: initialLoops[TrackNameType.SynthA],
             },
             {
                 id: TrackNameType.SynthB,
-                instrumentConfig: initialInstrumentsConfig[TrackNameType.SynthB],
-                instrument: createSynth(initialInstrumentsConfig[TrackNameType.SynthB]),
+                instrumentType: InstrumentType.Synth,
+                instrumentConfig: initialSynthConfig[TrackNameType.SynthB],
+                instrument: createSynth(initialSynthConfig[TrackNameType.SynthB]),
                 loop: initialLoops[TrackNameType.SynthB],
             },
             {
                 id: TrackNameType.SynthC,
-                instrumentConfig: initialInstrumentsConfig[TrackNameType.SynthC],
-                instrument: createSynth(initialInstrumentsConfig[TrackNameType.SynthC]),
+                instrumentType: InstrumentType.Synth,
+                instrumentConfig: initialSynthConfig[TrackNameType.SynthC],
+                instrument: createSynth(initialSynthConfig[TrackNameType.SynthC]),
                 loop: initialLoops[TrackNameType.SynthC],
+            },
+            {
+                id: TrackNameType.SamplerA,
+                instrumentType: InstrumentType.Sampler,
+                instrumentConfig: initialSamplerConfig[TrackNameType.SamplerA],
+                instrument: createSampler(initialSamplerConfig[TrackNameType.SamplerA]),
+                loop: initialLoops[TrackNameType.SamplerA],
             },
         ];
 
@@ -83,19 +99,7 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
         Tone.Transport.stop();
         set((state) => ({ ...state, isPlaying: false }));
     },
-    randomiseLoops: () => {
-        const randomLoops = {
-            [TrackNameType.SynthA]: generateRandomLoop(5),
-            [TrackNameType.SynthB]: generateRandomLoop(3),
-            [TrackNameType.SynthC]: generateRandomLoop(2),
-        };
-
-        set((state) => ({
-            ...state,
-            tracks: state.tracks.map((track) => ({ ...track, loop: randomLoops[track.id] })),
-        }));
-    },
-    updateInstrument: (trackId: TrackNameType, config: Partial<InstrumentConfig>) => {
+    updateInstrument: (trackId: TrackNameType, config: Partial<SynthConfig> | Partial<SamplerConfig>) => {
         set((state) => {
             const tracks = [...state.tracks];
             const trackToUpdate = tracks.find((track) => track.id === trackId);
@@ -104,7 +108,14 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
                 trackToUpdate.instrumentConfig = merge(trackToUpdate.instrumentConfig, config);
 
                 // Update Tone.js instruments
-                trackToUpdate.instrument.synth.set(trackToUpdate.instrumentConfig.synthOptions);
+                if (trackToUpdate.instrumentType === InstrumentType.Synth) {
+                    trackToUpdate.instrument.synth.set(trackToUpdate.instrumentConfig.synthOptions);
+                }
+
+                if (trackToUpdate.instrumentType === InstrumentType.Sampler) {
+                    trackToUpdate.instrument.sampler.set(trackToUpdate.instrumentConfig.samplerOptions);
+                }
+
                 trackToUpdate.instrument.gain.gain.rampTo(trackToUpdate.instrumentConfig.gain);
 
                 return { ...state, tracks };
