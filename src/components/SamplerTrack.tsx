@@ -1,23 +1,37 @@
-import { Loop } from '@lib/types/sequencer';
-import { TrackNameType } from '@lib/types/tracks';
+import { InstrumentType, TrackNameType } from '@lib/types/tracks';
 import useTrackStore from 'src/stores/useTrackStore';
 
 import shallow from 'zustand/shallow';
 
 interface SamplerTrackProps {
-    loop: Loop;
+    // loop: Loop;
     id: TrackNameType;
-    muted: boolean;
+    // muted: boolean;
 }
 
-export default function SamplerTrack({ loop, id, muted }: SamplerTrackProps) {
-    const { updateInstrument, updateLoop } = useTrackStore(
+export default function SamplerTrack({
+    // loop,
+    id,
+}: // muted
+
+SamplerTrackProps) {
+    const { updateInstrument, updateLoop, track } = useTrackStore(
         (state) => ({
             updateInstrument: state.updateInstrument,
             updateLoop: state.updateLoop,
+            track: state.tracks.find((track) => track.id === id),
         }),
         shallow,
     );
+
+    console.log('sampler track rendered', track, id);
+
+    if (!track || track.instrumentType !== InstrumentType.Sampler) {
+        return null;
+    }
+
+    const { loop } = track;
+    const muted = track.instrumentConfig.gain === 0;
 
     return (
         <article className="flex flex-col gap-2 w-full mb-8">

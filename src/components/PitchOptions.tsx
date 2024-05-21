@@ -1,6 +1,6 @@
 import { pitchesByOctaves } from '@lib/trackHelpers';
 
-export function PitchOptions() {
+export function PitchOptions(): React.ReactElement {
     return (
         <>
             <option value={undefined}>--</option>

@@ -1,22 +1,17 @@
 import dynamic from 'next/dynamic';
-import useTrackStore from 'src/stores/useTrackStore';
+import useTrackStore, { TrackStore } from 'src/stores/useTrackStore';
 import shallow from 'zustand/shallow';
 
 const Tracks = dynamic(() => import('@components/Tracks'), {
     ssr: false,
 });
 
-function Sequencer(): JSX.Element {
-    const { start, stop } = useTrackStore(
-        (state) => ({
-            start: state.start,
-            stop: state.stop,
-        }),
-        shallow,
-    );
+const selector = (state: TrackStore) => ({ start: state.start, stop: state.stop });
 
-    const store = useTrackStore();
-    console.log(store);
+function Sequencer(): JSX.Element {
+    const { start, stop } = useTrackStore(selector, shallow);
+
+    console.log('Sequencer rendered');
 
     return (
         <div>
