@@ -1,6 +1,6 @@
+import { initialLoops, initialSamplerConfig, initialSynthConfig } from '@lib/initialState';
 import { playSequenceInStore } from '@lib/playSequence';
 import Tone from '@lib/tone';
-import { initialLoops, initialSamplerConfig, initialSynthConfig } from '@lib/trackHelpers';
 import { Loop, SamplerConfig, SynthConfig, Track } from '@lib/types/sequencer';
 import { InstrumentType, TrackNameType } from '@lib/types/tracks';
 import merge from 'lodash/merge';
