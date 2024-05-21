@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import useTrackStore from 'src/stores/useTrackStore';
 import shallow from 'zustand/shallow';
 import { PitchOptions } from './PitchOptions';
+import SamplerTrack from './SamplerTrack';
 import SynthTrack from './SynthTrack';
 
 export default function Tracks() {
@@ -20,7 +21,16 @@ export default function Tracks() {
             {tracks.map((track) => {
                 const muted = track.instrumentConfig.gain === 0;
 
-                if (track.instrumentType === InstrumentType.Sampler) return undefined;
+                if (track.instrumentType === InstrumentType.Sampler)
+                    return (
+                        <SamplerTrack
+                            key={track.id}
+                            id={track.id}
+                            loop={track.loop}
+                            muted={muted}
+                            pitchOptions={pitchOptions}
+                        />
+                    );
 
                 return (
                     <SynthTrack

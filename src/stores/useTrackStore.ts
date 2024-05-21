@@ -127,7 +127,7 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
     updateLoop: (trackId: TrackNameType, loop: Loop) => {
         set((state) => {
             const tracks = [...state.tracks];
-            const trackToUpdate = tracks.find((track: any) => track.id === trackId);
+            const trackToUpdate = tracks.find((track: Track) => track.id === trackId);
 
             if (trackToUpdate) {
                 trackToUpdate.loop = loop;

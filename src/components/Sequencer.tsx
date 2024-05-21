@@ -11,15 +11,16 @@ function Sequencer(): JSX.Element {
         (state) => ({
             start: state.start,
             stop: state.stop,
-            randomiseLoops: state.randomiseLoops,
         }),
         shallow,
     );
 
+    const store = useTrackStore();
+    console.log(store);
+
     return (
         <div>
             <div>
-                <h1 className="text-center">Sequencer</h1>
                 <button type="button" className="p-2" onClick={start}>
                     start
                 </button>

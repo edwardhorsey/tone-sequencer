@@ -7,7 +7,7 @@ interface Note {
     pitch: string;
 }
 
-export type Loop = (Note | false)[];
+export type Loop = Note[][];
 
 export type Loops = {
     [key in TrackNameType]?: Loop;
@@ -16,7 +16,7 @@ export type Loops = {
 export type Instrument = Tone.Synth;
 
 export type Instruments = {
-    [key in TrackNameType]: Instrument;
+    [key in TrackNameType]: Instrument; // Should be Instrument | Sampler
 };
 
 export type SynthConfig = {
@@ -43,7 +43,6 @@ interface BaseTrackSynth {
     instrumentType: InstrumentType.Synth;
     instrumentConfig: SynthConfig;
     instrument: BaseInstrumentSynth;
-    loop: Loop;
 }
 
 interface BaseTrackSampler {

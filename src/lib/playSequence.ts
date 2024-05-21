@@ -11,15 +11,16 @@ export const playSequenceInStore = (tracks: Track[], time: Time): void => {
         if (loop) {
             const { instrument, instrumentType } = track;
             const step = counter % loop.length;
-            const currentNote = loop[step];
+            const currentStep = loop[step];
 
-            if (currentNote) {
-                const { pitch } = currentNote;
-
-                if (instrumentType === InstrumentType.Sampler) {
-                    instrument.sampler.triggerAttackRelease(pitch, '16n', time);
-                } else if (instrumentType === InstrumentType.Synth) {
-                    instrument.synth.triggerAttackRelease(pitch, '16n', time);
+            for (const note of currentStep) {
+                if (note) {
+                    const { pitch } = note;
+                    if (instrumentType === InstrumentType.Sampler) {
+                        instrument.sampler.triggerAttackRelease(pitch, '16n', time);
+                    } else if (instrumentType === InstrumentType.Synth) {
+                        instrument.synth.triggerAttackRelease(pitch, '16n', time);
+                    }
                 }
             }
         }

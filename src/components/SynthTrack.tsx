@@ -16,6 +16,7 @@ import { OmniOscillatorOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import shallow from 'zustand/shallow';
 const omniOscillatorTypes = [
+    // add type here
     'fatsine',
     'fatsquare',
     'fatsawtooth',
@@ -157,17 +158,17 @@ export default function SynthTrack({ loop, id, instrumentConfig, instrument, mut
             </div>
 
             <div className="flex">
-                <div className="flex-1 flex">
+                <div className="flex-1 flex pt-4 pl-14">
                     {loop.map((step, idx, array) => {
                         return (
                             <div key={`${step}.${idx}`} className="flex flex-col">
                                 <select
-                                    className="flex justify-center items-center border border-green-400 w-14 h-10 p-1 text-sm"
-                                    defaultValue={step ? step.pitch : undefined}
+                                    className="flex justify-center items-center border w-14 h-8 p-1 text-xs"
+                                    defaultValue={step[0]?.pitch ?? undefined}
                                     onChange={(event) => {
                                         const value = event.target.value;
                                         const newLoop = [...array];
-                                        newLoop[idx] = value !== '--' ? { pitch: value } : false;
+                                        newLoop[idx] = value === '--' ? [] : [{ pitch: value }];
 
                                         updateLoop(id, newLoop);
                                     }}

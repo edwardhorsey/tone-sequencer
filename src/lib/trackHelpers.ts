@@ -15,8 +15,6 @@ export function bresenhamEuclidean(onsets: number, totalPulses: number) {
     return pattern;
 }
 
-export default bresenhamEuclidean;
-
 const pitches = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
 export const pitchesByOctaves: string[] = ['5', '4', '3', '2'].reduce((acc: string[], octave) => {
@@ -30,128 +28,55 @@ export function generateRandomLoop(octave = 3) {
 
     const loop: Loop = euclideanRhythm.map((note) => {
         if (note === 0) {
-            return false;
+            return [];
         }
 
         const pitch = pitches[Math.round(Math.random() * (pitches.length - 1))] + String(octave);
 
-        return { pitch };
+        return [{ pitch }];
     });
 
     return loop;
 }
 
 export const initialLoops: {
-    [key in TrackNameType]: Loop;
+    [TrackNameType.SynthA]: Loop;
+    [TrackNameType.SynthB]: Loop;
+    [TrackNameType.SynthC]: Loop;
+    [TrackNameType.SamplerA]: Loop;
 } = {
-    SynthA: [
-        false,
-        false,
-        false,
-        false,
-        false,
-        {
-            pitch: 'G5',
-        },
-    ],
-    SynthB: [
-        false,
-        false,
-        {
-            pitch: 'Eb3',
-        },
-        false,
-        {
-            pitch: 'G3',
-        },
-        {
-            pitch: 'Eb3',
-        },
-        false,
-        {
-            pitch: 'Bb3',
-        },
-    ],
+    SynthA: [[], [{ pitch: 'F2' }], [], [], [], [{ pitch: 'F2' }]],
+    SynthB: [[], [], [{ pitch: 'Eb3' }], [], [{ pitch: 'G3' }], [{ pitch: 'Eb3' }], [], [{ pitch: 'Bb3' }]],
     SynthC: [
-        false,
-        {
-            pitch: 'C4',
-        },
-        {
-            pitch: 'C2',
-        },
-        false,
-        {
-            pitch: 'Gb2',
-        },
-        false,
-        {
-            pitch: 'A2',
-        },
-        false,
-        {
-            pitch: 'A2',
-        },
-        false,
-        {
-            pitch: 'F2',
-        },
-        false,
-        {
-            pitch: 'D2',
-        },
-        false,
-        {
-            pitch: 'A2',
-        },
-        false,
-        {
-            pitch: 'Bb2',
-        },
+        [],
+        [],
+        [{ pitch: 'F3' }],
+        [],
+        [{ pitch: 'Gb3' }],
+        [],
+        [{ pitch: 'A3' }],
+        [],
+        [{ pitch: 'C#3' }],
+        [],
+        [{ pitch: 'Gb3' }],
     ],
     SamplerA: [
-        {
-            pitch: 'C2',
-        },
-        false,
-        {
-            pitch: 'D2',
-        },
-        {
-            pitch: 'D2',
-        },
-        {
-            pitch: 'C2',
-        },
-        false,
-        {
-            pitch: 'C2',
-        },
-        {
-            pitch: 'D2',
-        },
-        {
-            pitch: 'C2',
-        },
-        {
-            pitch: 'E2',
-        },
-        {
-            pitch: 'D2',
-        },
-        false,
-        {
-            pitch: 'C2',
-        },
-        {
-            pitch: 'D2',
-        },
-        {
-            pitch: 'C2',
-        },
-        {
-            pitch: 'D2',
-        },
+        [{ pitch: 'C2' }],
+        [],
+        [{ pitch: 'D2' }],
+        [{ pitch: 'D2' }],
+        [{ pitch: 'C2' }],
+        [],
+        [{ pitch: 'C2' }],
+        [{ pitch: 'D2' }],
+        [{ pitch: 'C2' }],
+        [{ pitch: 'E2' }],
+        [{ pitch: 'D2' }],
+        [],
+        [{ pitch: 'C2' }],
+        [{ pitch: 'D2' }],
+        [{ pitch: 'C2' }],
+        [{ pitch: 'D2' }],
     ],
 };
 
@@ -166,9 +91,9 @@ export const initialSynthConfig: {
                 type: 'fattriangle',
             },
             envelope: {
-                attack: 0.001,
-                decay: 0.2,
-                sustain: 0.3,
+                attack: 0.08,
+                decay: 1.297,
+                sustain: 0.76,
             },
         },
         gain: 0.8,
@@ -184,7 +109,7 @@ export const initialSynthConfig: {
                 sustain: 0,
             },
         },
-        gain: 0.8,
+        gain: 0,
     },
     [TrackNameType.SynthC]: {
         synthOptions: {
@@ -193,8 +118,8 @@ export const initialSynthConfig: {
             },
             envelope: {
                 attack: 0.001,
-                decay: 0.2,
-                sustain: 0.1,
+                decay: 0.1,
+                sustain: 0,
             },
         },
         gain: 0.8,
