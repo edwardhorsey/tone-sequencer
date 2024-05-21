@@ -7,6 +7,7 @@ import SamplerTrack from './SamplerTrack';
 import SynthTrack from './SynthTrack';
 
 export default function Tracks() {
+    // const tracks = useTrackStore((state) => state.tracks, shallow);
     const { tracks } = useTrackStore(
         (state) => ({
             tracks: state.tracks,
@@ -16,19 +17,18 @@ export default function Tracks() {
 
     const pitchOptions = useMemo(() => <PitchOptions />, []);
 
-    return (
-        <section className="flex flex-col items-start w-full">
-            {tracks.map((track) => {
-                const muted = track.instrumentConfig.gain === 0;
+    console.log('tracks are rendered');
 
+    return (
+        <section className="flex flex-col items-start w-full lg:min-w-[1080px]">
+            {tracks.map((track) => {
                 if (track.instrumentType === InstrumentType.Sampler)
                     return (
                         <SamplerTrack
                             key={track.id}
                             id={track.id}
                             loop={track.loop}
-                            muted={muted}
-                            pitchOptions={pitchOptions}
+                            instrumentConfig={track.instrumentConfig}
                         />
                     );
 
@@ -38,7 +38,6 @@ export default function Tracks() {
                         id={track.id}
                         loop={track.loop}
                         pitchOptions={pitchOptions}
-                        muted={muted}
                         instrument={track.instrument}
                         instrumentConfig={track.instrumentConfig}
                     />

@@ -1,59 +1,57 @@
-import Tone from '@lib/tone';
 import { InstrumentType, TrackNameType } from '@lib/types/tracks';
-import { Gain, Sampler, SamplerOptions, SynthOptions } from 'tone';
+import { Gain, Sampler, SamplerOptions, Synth, SynthOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 
 interface Note {
     pitch: string;
 }
 
-export type Loop = Note[][];
+type Step = Note[];
+
+export type Loop = Step[];
 
 export type Loops = {
     [key in TrackNameType]?: Loop;
 };
 
-export type Instrument = Tone.Synth;
-
-export type Instruments = {
-    [key in TrackNameType]: Instrument; // Should be Instrument | Sampler
-};
+// Synth
+export interface ToneInstrumentSynth {
+    synth: Synth;
+    gain: Gain;
+}
 
 export type SynthConfig = {
     synthOptions: RecursivePartial<SynthOptions>;
     gain: number;
 };
 
-export type SamplerConfig = {
-    samplerOptions: RecursivePartial<SamplerOptions>;
-    gain: number;
-};
-
-export interface BaseInstrumentSampler {
+// Sampler
+export interface ToneInstrumentSampler {
     sampler: Sampler;
     gain: Gain;
 }
 
-export interface BaseInstrumentSynth {
-    synth: Instrument;
-    gain: Gain;
-}
-
-interface BaseTrackSynth {
-    instrumentType: InstrumentType.Synth;
-    instrumentConfig: SynthConfig;
-    instrument: BaseInstrumentSynth;
-}
-
-interface BaseTrackSampler {
-    instrumentType: InstrumentType.Sampler;
-    instrumentConfig: SamplerConfig;
-    instrument: BaseInstrumentSampler;
-}
+export type SamplerConfig = {
+    samplerOptions: RecursivePartial<SamplerOptions>;
+    gain: number;
+};
 
 interface BaseTrack {
     id: TrackNameType;
     loop: Loop;
 }
 
-export type Track = (BaseTrack & BaseTrackSynth) | (BaseTrack & BaseTrackSampler);
+// Track
+interface BaseTrackSynth {
+    instrumentType: InstrumentType.Synth;
+    instrumentConfig: SynthConfig;
+    instrument: ToneInstrumentSynth;
+}
+
+interface BaseTrackSampler {
+    instrumentType: InstrumentType.Sampler;
+    instrumentConfig: SamplerConfig;
+    instrument: ToneInstrumentSampler;
+}
+
+export type Track = BaseTrack & (BaseTrackSynth | BaseTrackSampler);

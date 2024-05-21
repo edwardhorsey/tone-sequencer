@@ -8,15 +8,15 @@ import {
 } from '@lib/envelopeHelpers';
 import { randomBetween } from '@lib/misc';
 import { generateRandomLoop } from '@lib/trackHelpers';
-import { BaseInstrumentSynth, Loop, SynthConfig } from '@lib/types/sequencer';
+import { Loop, SynthConfig, ToneInstrumentSynth } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
 import useTrackStore from 'src/stores/useTrackStore';
-
 import { OmniOscillatorOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
+import { OmniOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import shallow from 'zustand/shallow';
-const omniOscillatorTypes = [
-    // add type here
+
+const omniOscillatorTypes: OmniOscillatorType[] = [
     'fatsine',
     'fatsquare',
     'fatsawtooth',
@@ -32,27 +32,23 @@ interface SynthTrackProps {
     loop: Loop;
     id: TrackNameType;
     instrumentConfig: SynthConfig;
-    instrument: BaseInstrumentSynth;
-    muted: boolean;
+    instrument: ToneInstrumentSynth;
     pitchOptions: JSX.Element;
 }
 
-export default function SynthTrack({ loop, id, instrumentConfig, instrument, muted, pitchOptions }: SynthTrackProps) {
-    const { updateInstrument, updateLoop } = useTrackStore(
-        (state) => ({
-            updateInstrument: state.updateInstrument,
-            updateLoop: state.updateLoop,
-        }),
+export default function SynthTrack({ loop, id, instrumentConfig, instrument, pitchOptions }: SynthTrackProps) {
+    const [updateInstrument, updateLoop] = useTrackStore(
+        (state) => [state.updateInstrument, state.updateLoop],
         shallow,
     );
+
+    const muted = instrumentConfig.gain === 0;
 
     return (
         <article className="flex flex-col gap-2 w-full mb-8">
             <h2 className="mr-2 font-bold">{id}</h2>
-
             <div className="flex justify-between">
                 <label>
-                    <span>Oscillator</span>
                     <select
                         defaultValue={
                             instrumentConfig.synthOptions.oscillator?.type ?? instrument.synth.oscillator.type
@@ -64,7 +60,7 @@ export default function SynthTrack({ loop, id, instrumentConfig, instrument, mut
                                 updateInstrument(id, {
                                     synthOptions: {
                                         oscillator: {
-                                            type: event.target.value,
+                                            type: value,
                                         },
                                     } as RecursivePartial<OmniOscillatorOptions>,
                                 });
@@ -147,6 +143,7 @@ export default function SynthTrack({ loop, id, instrumentConfig, instrument, mut
 
                 <button
                     type="button"
+                    className="w-16"
                     onClick={() => {
                         updateInstrument(id, {
                             gain: muted ? 0.9 : 0,
@@ -157,7 +154,7 @@ export default function SynthTrack({ loop, id, instrumentConfig, instrument, mut
                 </button>
             </div>
 
-            <div className="flex">
+
                 <div className="flex-1 flex pt-4 pl-14">
                     {loop.map((step, idx, array) => {
                         return (
@@ -178,6 +175,7 @@ export default function SynthTrack({ loop, id, instrumentConfig, instrument, mut
                             </div>
                         );
                     })}
+
                     <div className="ml-auto">
                         <button
                             className="ml-2"
@@ -192,7 +190,7 @@ export default function SynthTrack({ loop, id, instrumentConfig, instrument, mut
                         </button>
                     </div>
                 </div>
-            </div>
+
         </article>
     );
 }

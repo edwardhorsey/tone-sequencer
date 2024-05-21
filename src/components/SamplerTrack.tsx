@@ -1,34 +1,33 @@
-import { Loop } from '@lib/types/sequencer';
+import { Loop, SamplerConfig } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
 import useTrackStore from 'src/stores/useTrackStore';
-
 import shallow from 'zustand/shallow';
+
+function emptySamplerLoop(): Loop {
+    return Array.from({ length: 16 }, () => []);
+}
 
 interface SamplerTrackProps {
     loop: Loop;
     id: TrackNameType;
-    // instrumentConfig: SynthConfig;
-    // instrument: BaseInstrumentSynth;
-    muted: boolean;
-    pitchOptions: JSX.Element;
+    instrumentConfig: SamplerConfig;
 }
 
-export default function SamplerTrack({ loop, id, muted, pitchOptions }: SamplerTrackProps) {
-    const { updateInstrument, updateLoop } = useTrackStore(
-        (state) => ({
-            updateInstrument: state.updateInstrument,
-            updateLoop: state.updateLoop,
-        }),
+export default function SamplerTrack({ loop, id, instrumentConfig }: SamplerTrackProps) {
+    const [updateInstrument, updateLoop] = useTrackStore(
+        (state) => [state.updateInstrument, state.updateLoop],
         shallow,
     );
 
+    const muted = instrumentConfig.gain === 0;
+
     return (
         <article className="flex flex-col gap-2 w-full mb-8">
-            <h2 className="mr-2 font-bold">{id}</h2>
-
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-12 mb-4">
+                <h2 className="font-bold mr-auto">{id}</h2>
                 <button
                     type="button"
+                    className="w-16"
                     onClick={() => {
                         updateInstrument(id, {
                             gain: muted ? 0.9 : 0,
@@ -50,9 +49,13 @@ export default function SamplerTrack({ loop, id, muted, pitchOptions }: SamplerT
                             );
                         })}
                     </div>
+
                     {loop.map((step, idx, array) => {
                         return (
-                            <div key={`${step}.${idx}`} className="flex flex-col w-14 h-24 justify-between">
+                            <div
+                                key={`${step}.${idx}`}
+                                className="flex flex-col w-14 h-24 justify-between items-center"
+                            >
                                 {['C2', 'D2', 'E2'].map((pitch) => {
                                     return (
                                         <input
@@ -64,15 +67,12 @@ export default function SamplerTrack({ loop, id, muted, pitchOptions }: SamplerT
                                             onChange={(event) => {
                                                 const pitch = event.target.value;
                                                 const newLoop = [...loop];
-                                                console.log(newLoop, 'clicked ', pitch, ' at ', idx, ' step ', step);
 
                                                 if (!newLoop[idx].map((pitch) => pitch.pitch).includes(pitch)) {
                                                     newLoop[idx].push({ pitch });
                                                 } else {
                                                     newLoop[idx] = newLoop[idx].filter((note) => note.pitch !== pitch);
                                                 }
-
-                                                console.log(newLoop);
 
                                                 updateLoop(id, newLoop);
                                             }}
@@ -82,6 +82,16 @@ export default function SamplerTrack({ loop, id, muted, pitchOptions }: SamplerT
                             </div>
                         );
                     })}
+
+                    <button
+                        type="button"
+                        className="ml-auto self-start"
+                        onClick={() => {
+                            updateLoop(id, emptySamplerLoop());
+                        }}
+                    >
+                        Clear
+                    </button>
                 </div>
             </div>
         </article>

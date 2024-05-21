@@ -142,4 +142,8 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
 
 useTrackStore.getState().initialise();
 
+useTrackStore.subscribe((state) => {
+    console.log('State changed', state);
+});
+
 export default useTrackStore;

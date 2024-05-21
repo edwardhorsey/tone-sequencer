@@ -97,6 +97,6 @@ export const initialSamplerConfig: {
                 E2: 'samples/wa_808tape_clap_01_sat.wav',
             },
         },
-        gain: 0.9,
+        gain: 0.0,
     },
 };
