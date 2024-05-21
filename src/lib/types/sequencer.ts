@@ -19,36 +19,36 @@ export type Instruments = {
     [key in TrackNameType]: Instrument; // Should be Instrument | Sampler
 };
 
+export interface ToneInstrumentSynth {
+    synth: Instrument;
+    gain: Gain;
+}
+
 export type SynthConfig = {
     synthOptions: RecursivePartial<SynthOptions>;
     gain: number;
 };
+
+export interface ToneInstrumentSampler {
+    sampler: Sampler;
+    gain: Gain;
+}
 
 export type SamplerConfig = {
     samplerOptions: RecursivePartial<SamplerOptions>;
     gain: number;
 };
 
-export interface BaseInstrumentSampler {
-    sampler: Sampler;
-    gain: Gain;
-}
-
-export interface BaseInstrumentSynth {
-    synth: Instrument;
-    gain: Gain;
-}
-
 interface BaseTrackSynth {
     instrumentType: InstrumentType.Synth;
     instrumentConfig: SynthConfig;
-    instrument: BaseInstrumentSynth;
+    instrument: ToneInstrumentSynth;
 }
 
 interface BaseTrackSampler {
     instrumentType: InstrumentType.Sampler;
     instrumentConfig: SamplerConfig;
-    instrument: BaseInstrumentSampler;
+    instrument: ToneInstrumentSampler;
 }
 
 interface BaseTrack {

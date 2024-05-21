@@ -17,20 +17,12 @@ export default function Tracks() {
     const pitchOptions = useMemo(() => <PitchOptions />, []);
 
     return (
-        <section className="flex flex-col items-start w-full">
+        <section className="flex flex-col items-start w-full lg:min-w-[1080px]">
             {tracks.map((track) => {
                 const muted = track.instrumentConfig.gain === 0;
 
                 if (track.instrumentType === InstrumentType.Sampler)
-                    return (
-                        <SamplerTrack
-                            key={track.id}
-                            id={track.id}
-                            loop={track.loop}
-                            muted={muted}
-                            pitchOptions={pitchOptions}
-                        />
-                    );
+                    return <SamplerTrack key={track.id} id={track.id} loop={track.loop} muted={muted} />;
 
                 return (
                     <SynthTrack

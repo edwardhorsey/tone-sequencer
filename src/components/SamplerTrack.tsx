@@ -7,13 +7,10 @@ import shallow from 'zustand/shallow';
 interface SamplerTrackProps {
     loop: Loop;
     id: TrackNameType;
-    // instrumentConfig: SynthConfig;
-    // instrument: BaseInstrumentSynth;
     muted: boolean;
-    pitchOptions: JSX.Element;
 }
 
-export default function SamplerTrack({ loop, id, muted, pitchOptions }: SamplerTrackProps) {
+export default function SamplerTrack({ loop, id, muted }: SamplerTrackProps) {
     const { updateInstrument, updateLoop } = useTrackStore(
         (state) => ({
             updateInstrument: state.updateInstrument,
@@ -24,9 +21,8 @@ export default function SamplerTrack({ loop, id, muted, pitchOptions }: SamplerT
 
     return (
         <article className="flex flex-col gap-2 w-full mb-8">
-            <h2 className="mr-2 font-bold">{id}</h2>
-
-            <div className="flex justify-end">
+            <div className="flex justify-between mb-4">
+                <h2 className="mr-2 font-bold">{id}</h2>
                 <button
                     type="button"
                     onClick={() => {
@@ -52,7 +48,10 @@ export default function SamplerTrack({ loop, id, muted, pitchOptions }: SamplerT
                     </div>
                     {loop.map((step, idx, array) => {
                         return (
-                            <div key={`${step}.${idx}`} className="flex flex-col w-14 h-24 justify-between">
+                            <div
+                                key={`${step}.${idx}`}
+                                className="flex flex-col w-14 h-24 justify-between items-center"
+                            >
                                 {['C2', 'D2', 'E2'].map((pitch) => {
                                     return (
                                         <input

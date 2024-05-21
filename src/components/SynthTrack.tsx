@@ -8,14 +8,15 @@ import {
 } from '@lib/envelopeHelpers';
 import { randomBetween } from '@lib/misc';
 import { generateRandomLoop } from '@lib/trackHelpers';
-import { BaseInstrumentSynth, Loop, SynthConfig } from '@lib/types/sequencer';
+import { Loop, SynthConfig, ToneInstrumentSynth } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
 import useTrackStore from 'src/stores/useTrackStore';
-
 import { OmniOscillatorOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
+import { OmniOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import shallow from 'zustand/shallow';
-const omniOscillatorTypes = [
+
+const omniOscillatorTypes: OmniOscillatorType[] = [
     // add type here
     'fatsine',
     'fatsquare',
@@ -32,7 +33,7 @@ interface SynthTrackProps {
     loop: Loop;
     id: TrackNameType;
     instrumentConfig: SynthConfig;
-    instrument: BaseInstrumentSynth;
+    instrument: ToneInstrumentSynth;
     muted: boolean;
     pitchOptions: JSX.Element;
 }
@@ -49,10 +50,8 @@ export default function SynthTrack({ loop, id, instrumentConfig, instrument, mut
     return (
         <article className="flex flex-col gap-2 w-full mb-8">
             <h2 className="mr-2 font-bold">{id}</h2>
-
             <div className="flex justify-between">
                 <label>
-                    <span>Oscillator</span>
                     <select
                         defaultValue={
                             instrumentConfig.synthOptions.oscillator?.type ?? instrument.synth.oscillator.type
