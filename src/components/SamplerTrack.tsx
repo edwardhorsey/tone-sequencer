@@ -1,6 +1,7 @@
+import { muteSelector, trackSelector } from '@lib/selectors';
 import { Loop, SamplerConfig } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
-import useTrackStore from 'src/stores/useTrackStore';
+import useTrackStore from '@stores/useTrackStore';
 import shallow from 'zustand/shallow';
 
 function emptySamplerLoop(): Loop {
@@ -13,13 +14,17 @@ interface SamplerTrackProps {
     instrumentConfig: SamplerConfig;
 }
 
-export default function SamplerTrack({ loop, id, instrumentConfig }: SamplerTrackProps) {
-    const [updateInstrument, updateLoop] = useTrackStore(
-        (state) => [state.updateInstrument, state.updateLoop],
+export default function SamplerTrack({ id }: SamplerTrackProps) {
+    const [updateInstrument, updateLoop, track] = useTrackStore(
+        (state) => [state.updateInstrument, state.updateLoop, state.tracks.find((track) => track.id === id)],
         shallow,
     );
+    const { loop, instrumentConfig } = useTrackStore(trackSelector(id), shallow);
+    const muted = useTrackStore(muteSelector(id), shallow);
 
-    const muted = instrumentConfig.gain === 0;
+    if (!loop || !instrumentConfig) {
+        return null;
+    }
 
     return (
         <article className="flex flex-col gap-2 w-full mb-8">
@@ -27,7 +32,7 @@ export default function SamplerTrack({ loop, id, instrumentConfig }: SamplerTrac
                 <h2 className="font-bold mr-auto">{id}</h2>
                 <button
                     type="button"
-                    className="w-16"
+                    className="w-16 text-right"
                     onClick={() => {
                         updateInstrument(id, {
                             gain: muted ? 0.9 : 0,
@@ -50,7 +55,7 @@ export default function SamplerTrack({ loop, id, instrumentConfig }: SamplerTrac
                         })}
                     </div>
 
-                    {loop.map((step, idx, array) => {
+                    {loop.map((step, idx) => {
                         return (
                             <div
                                 key={`${step}.${idx}`}

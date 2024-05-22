@@ -7,10 +7,11 @@ import {
     calculateSustainValueFromPercentage,
 } from '@lib/envelopeHelpers';
 import { randomBetween } from '@lib/misc';
+import { muteSelector, trackSelector } from '@lib/selectors';
 import { generateRandomLoop } from '@lib/trackHelpers';
-import { Loop, SynthConfig, ToneInstrumentSynth } from '@lib/types/sequencer';
+import { Loop, SamplerConfig, SynthConfig, ToneInstrumentSynth } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
-import useTrackStore from 'src/stores/useTrackStore';
+import useTrackStore from '@stores/useTrackStore';
 import { OmniOscillatorOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { OmniOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
@@ -36,13 +37,21 @@ interface SynthTrackProps {
     pitchOptions: JSX.Element;
 }
 
-export default function SynthTrack({ loop, id, instrumentConfig, instrument, pitchOptions }: SynthTrackProps) {
+function isSynthConfig(config: SynthConfig | SamplerConfig): config is SynthConfig {
+    return config.hasOwnProperty('synthOptions');
+}
+
+export default function SynthTrack({ id, instrument, pitchOptions }: SynthTrackProps) {
     const [updateInstrument, updateLoop] = useTrackStore(
         (state) => [state.updateInstrument, state.updateLoop],
         shallow,
     );
+    const { loop, instrumentConfig } = useTrackStore(trackSelector(id), shallow);
+    const muted = useTrackStore(muteSelector(id), shallow);
 
-    const muted = instrumentConfig.gain === 0;
+    if (!loop || !instrumentConfig || !isSynthConfig(instrumentConfig)) {
+        return null;
+    }
 
     return (
         <article className="flex flex-col gap-2 w-full mb-8">
@@ -154,43 +163,41 @@ export default function SynthTrack({ loop, id, instrumentConfig, instrument, pit
                 </button>
             </div>
 
+            <div className="flex-1 flex pt-4 pl-14">
+                {loop.map((step, idx, array) => {
+                    return (
+                        <div key={`${step}.${idx}`} className="flex flex-col">
+                            <select
+                                className="flex justify-center items-center border w-14 h-8 p-1 text-xs"
+                                defaultValue={step[0]?.pitch ?? undefined}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    const newLoop = [...array];
+                                    newLoop[idx] = value === '--' ? [] : [{ pitch: value }];
 
-                <div className="flex-1 flex pt-4 pl-14">
-                    {loop.map((step, idx, array) => {
-                        return (
-                            <div key={`${step}.${idx}`} className="flex flex-col">
-                                <select
-                                    className="flex justify-center items-center border w-14 h-8 p-1 text-xs"
-                                    defaultValue={step[0]?.pitch ?? undefined}
-                                    onChange={(event) => {
-                                        const value = event.target.value;
-                                        const newLoop = [...array];
-                                        newLoop[idx] = value === '--' ? [] : [{ pitch: value }];
+                                    updateLoop(id, newLoop);
+                                }}
+                            >
+                                {pitchOptions}
+                            </select>
+                        </div>
+                    );
+                })}
 
-                                        updateLoop(id, newLoop);
-                                    }}
-                                >
-                                    {pitchOptions}
-                                </select>
-                            </div>
-                        );
-                    })}
+                <div className="ml-auto">
+                    <button
+                        className="ml-2"
+                        type="button"
+                        onClick={() => {
+                            const loop = generateRandomLoop(randomBetween(2, 5));
 
-                    <div className="ml-auto">
-                        <button
-                            className="ml-2"
-                            type="button"
-                            onClick={() => {
-                                const loop = generateRandomLoop(randomBetween(2, 5));
-
-                                updateLoop(id, loop);
-                            }}
-                        >
-                            Randomise
-                        </button>
-                    </div>
+                            updateLoop(id, loop);
+                        }}
+                    >
+                        Randomise
+                    </button>
                 </div>
-
+            </div>
         </article>
     );
 }

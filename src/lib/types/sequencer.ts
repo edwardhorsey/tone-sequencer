@@ -54,4 +54,4 @@ interface BaseTrackSampler {
     instrument: ToneInstrumentSampler;
 }
 
-export type Track = BaseTrack & (BaseTrackSynth | BaseTrackSampler);
+export type Track = (BaseTrack & BaseTrackSynth) | (BaseTrack & BaseTrackSampler);

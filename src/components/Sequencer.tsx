@@ -1,5 +1,5 @@
 import Tracks from '@components/Tracks';
-import useTrackStore from 'src/stores/useTrackStore';
+import useTrackStore from '@stores/useTrackStore';
 import shallow from 'zustand/shallow';
 
 function Sequencer(): JSX.Element {

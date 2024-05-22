@@ -1,23 +1,15 @@
 import { InstrumentType } from '@lib/types/tracks';
+import useTrackStore from '@stores/useTrackStore';
 import { useMemo } from 'react';
-import useTrackStore from 'src/stores/useTrackStore';
 import shallow from 'zustand/shallow';
 import { PitchOptions } from './PitchOptions';
 import SamplerTrack from './SamplerTrack';
 import SynthTrack from './SynthTrack';
 
 export default function Tracks() {
-    // const tracks = useTrackStore((state) => state.tracks, shallow);
-    const { tracks } = useTrackStore(
-        (state) => ({
-            tracks: state.tracks,
-        }),
-        shallow,
-    );
+    const tracks = useTrackStore((state) => state.tracks, shallow);
 
     const pitchOptions = useMemo(() => <PitchOptions />, []);
-
-    console.log('tracks are rendered');
 
     return (
         <section className="flex flex-col items-start w-full lg:min-w-[1080px]">
