@@ -8,7 +8,6 @@ import SynthTrack from './SynthTrack';
 
 export default function Tracks() {
     const tracks = useTrackStore((state) => state.tracks, shallow);
-
     const pitchOptions = useMemo(() => <PitchOptions />, []);
 
     return (

@@ -10,10 +10,6 @@ type Step = Note[];
 
 export type Loop = Step[];
 
-export type Loops = {
-    [key in TrackNameType]?: Loop;
-};
-
 // Synth
 export interface ToneInstrumentSynth {
     synth: Synth;
@@ -36,12 +32,12 @@ export type SamplerConfig = {
     gain: number;
 };
 
+// Track
 interface BaseTrack {
     id: TrackNameType;
     loop: Loop;
 }
 
-// Track
 interface BaseTrackSynth {
     instrumentType: InstrumentType.Synth;
     instrumentConfig: SynthConfig;

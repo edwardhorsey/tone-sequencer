@@ -27,7 +27,7 @@ export interface TrackStore {
     initialise: () => void;
     start: () => void;
     stop: () => void;
-    updateInstrument: (trackId: TrackNameType, config: Partial<SynthConfig>) => void;
+    updateInstrument: (trackId: TrackNameType, config: Partial<SynthConfig | SamplerConfig>) => void;
     updateLoop: (trackId: TrackNameType, loop: Loop) => void;
 }
 
@@ -77,6 +77,7 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
     initialise: () => {
         if (typeof Window !== 'undefined') {
             Tone.Transport.cancel();
+            Tone.Transport.bpm.value = 128;
 
             Tone.Transport.scheduleRepeat((time) => {
                 const tracks = get().tracks;

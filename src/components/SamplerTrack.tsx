@@ -13,8 +13,8 @@ interface SamplerTrackProps {
 }
 
 export default function SamplerTrack({ id }: SamplerTrackProps) {
-    const [updateInstrument, updateLoop, track] = useTrackStore(
-        (state) => [state.updateInstrument, state.updateLoop, state.tracks.find((track) => track.id === id)],
+    const [updateInstrument, updateLoop] = useTrackStore(
+        (state) => [state.updateInstrument, state.updateLoop],
         shallow,
     );
     const { loop, instrumentConfig } = useTrackStore(trackSelector(id), shallow);
