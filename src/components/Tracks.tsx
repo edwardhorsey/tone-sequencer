@@ -15,25 +15,9 @@ export default function Tracks() {
         <section className="flex flex-col items-start w-full lg:min-w-[1080px]">
             {tracks.map((track) => {
                 if (track.instrumentType === InstrumentType.Sampler)
-                    return (
-                        <SamplerTrack
-                            key={track.id}
-                            id={track.id}
-                            loop={track.loop}
-                            instrumentConfig={track.instrumentConfig}
-                        />
-                    );
+                    return <SamplerTrack key={track.id} id={track.id} />;
 
-                return (
-                    <SynthTrack
-                        key={track.id}
-                        id={track.id}
-                        loop={track.loop}
-                        pitchOptions={pitchOptions}
-                        instrument={track.instrument}
-                        instrumentConfig={track.instrumentConfig}
-                    />
-                );
+                return <SynthTrack key={track.id} id={track.id} pitchOptions={pitchOptions} />;
             })}
         </section>
     );

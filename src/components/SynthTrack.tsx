@@ -9,7 +9,7 @@ import {
 import { randomBetween } from '@lib/misc';
 import { muteSelector, trackSelector } from '@lib/selectors';
 import { generateRandomLoop } from '@lib/trackHelpers';
-import { Loop, SamplerConfig, SynthConfig, ToneInstrumentSynth } from '@lib/types/sequencer';
+import { SamplerConfig, SynthConfig } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
 import useTrackStore from '@stores/useTrackStore';
 import { OmniOscillatorOptions } from 'tone';
@@ -30,10 +30,7 @@ const omniOscillatorTypes: OmniOscillatorType[] = [
 ];
 
 interface SynthTrackProps {
-    loop: Loop;
     id: TrackNameType;
-    instrumentConfig: SynthConfig;
-    instrument: ToneInstrumentSynth;
     pitchOptions: JSX.Element;
 }
 
@@ -41,7 +38,7 @@ function isSynthConfig(config: SynthConfig | SamplerConfig): config is SynthConf
     return config.hasOwnProperty('synthOptions');
 }
 
-export default function SynthTrack({ id, instrument, pitchOptions }: SynthTrackProps) {
+export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
     const [updateInstrument, updateLoop] = useTrackStore(
         (state) => [state.updateInstrument, state.updateLoop],
         shallow,
@@ -59,9 +56,7 @@ export default function SynthTrack({ id, instrument, pitchOptions }: SynthTrackP
             <div className="flex justify-between">
                 <label>
                     <select
-                        defaultValue={
-                            instrumentConfig.synthOptions.oscillator?.type ?? instrument.synth.oscillator.type
-                        }
+                        defaultValue={instrumentConfig.synthOptions.oscillator?.type}
                         onChange={(event) => {
                             const value = event.target.value;
 
@@ -89,7 +84,7 @@ export default function SynthTrack({ id, instrument, pitchOptions }: SynthTrackP
                     <input
                         type="range"
                         defaultValue={calculatePercentageFromAttackValue(
-                            Number(instrumentConfig.synthOptions?.envelope?.attack ?? instrument.synth.envelope.attack),
+                            Number(instrumentConfig.synthOptions?.envelope?.attack ?? 0.1),
                         )}
                         onChange={(event) => {
                             const value = Number(event.target.value);
@@ -111,7 +106,7 @@ export default function SynthTrack({ id, instrument, pitchOptions }: SynthTrackP
                     <input
                         type="range"
                         defaultValue={calculatePercentageFromDecayValue(
-                            Number(instrumentConfig.synthOptions?.envelope?.decay ?? instrument.synth.envelope.decay),
+                            Number(instrumentConfig.synthOptions?.envelope?.decay ?? 0.1),
                         )}
                         onChange={(event) => {
                             const value = Number(event.target.value);
@@ -133,7 +128,7 @@ export default function SynthTrack({ id, instrument, pitchOptions }: SynthTrackP
                     <input
                         type="range"
                         defaultValue={calculatePercentageFromSustainValue(
-                            instrumentConfig.synthOptions?.envelope?.sustain ?? instrument.synth.envelope.sustain,
+                            Number(instrumentConfig.synthOptions?.envelope?.sustain ?? 0.1),
                         )}
                         onChange={(event) => {
                             const value = Number(event.target.value);

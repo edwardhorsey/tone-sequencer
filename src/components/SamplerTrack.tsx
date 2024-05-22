@@ -1,5 +1,5 @@
 import { muteSelector, trackSelector } from '@lib/selectors';
-import { Loop, SamplerConfig } from '@lib/types/sequencer';
+import { Loop } from '@lib/types/sequencer';
 import { TrackNameType } from '@lib/types/tracks';
 import useTrackStore from '@stores/useTrackStore';
 import shallow from 'zustand/shallow';
@@ -9,9 +9,7 @@ function emptySamplerLoop(): Loop {
 }
 
 interface SamplerTrackProps {
-    loop: Loop;
     id: TrackNameType;
-    instrumentConfig: SamplerConfig;
 }
 
 export default function SamplerTrack({ id }: SamplerTrackProps) {
