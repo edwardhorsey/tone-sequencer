@@ -1,6 +1,6 @@
 import { Track } from '@lib/types/sequencer';
+import { InstrumentType } from '@lib/types/tracks';
 import { Time } from 'tone/build/esm/core/type/Units';
-import { InstrumentType } from './types/tracks';
 
 let counter = 0;
 

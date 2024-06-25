@@ -1,10 +1,10 @@
+import { PitchOptions } from '@components/PitchOptions';
+import SamplerTrack from '@components/SamplerTrack';
+import SynthTrack from '@components/SynthTrack';
 import { InstrumentType } from '@lib/types/tracks';
 import useTrackStore from '@stores/useTrackStore';
 import { useMemo } from 'react';
 import shallow from 'zustand/shallow';
-import { PitchOptions } from './PitchOptions';
-import SamplerTrack from './SamplerTrack';
-import SynthTrack from './SynthTrack';
 
 export default function Tracks() {
     const tracks = useTrackStore((state) => state.tracks, shallow);

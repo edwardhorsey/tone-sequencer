@@ -1,5 +1,5 @@
-import { TrackStore } from 'src/stores/useTrackStore';
-import { TrackNameType } from './types/tracks';
+import { TrackNameType } from '@lib/types/tracks';
+import { TrackStore } from '@stores/useTrackStore';
 
 export const trackSelector = (id: TrackNameType) => (state: TrackStore) => {
     const track = state.tracks.find((track) => track.id === id);
