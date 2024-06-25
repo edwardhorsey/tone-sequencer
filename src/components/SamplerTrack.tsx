@@ -1,6 +1,6 @@
 import { muteSelector, trackSelector } from '@lib/selectors';
 import { Loop } from '@lib/types/sequencer';
-import { TrackNameType } from '@lib/types/tracks';
+import { TrackNameReadable, TrackNameType } from '@lib/types/tracks';
 import useTrackStore from '@stores/useTrackStore';
 import shallow from 'zustand/shallow';
 
@@ -25,12 +25,12 @@ export default function SamplerTrack({ id }: SamplerTrackProps) {
     }
 
     return (
-        <article className="flex flex-col gap-2 w-full mb-8">
+        <article className="flex flex-col gap-2 w-full mb-8 bg-zinc-100 p-4 rounded-md">
             <div className="flex justify-end gap-12 mb-4">
-                <h2 className="font-bold mr-auto">{id}</h2>
+                <h2 className="font-bold mr-auto">{TrackNameReadable[id]}</h2>
                 <button
                     type="button"
-                    className="w-16 text-right"
+                    className="w-28 text-center py-1 px-4 border border-black rounded-md bg-white"
                     onClick={() => {
                         updateInstrument(id, {
                             gain: muted ? 0.9 : 0,
@@ -88,7 +88,7 @@ export default function SamplerTrack({ id }: SamplerTrackProps) {
 
                     <button
                         type="button"
-                        className="ml-auto self-start"
+                        className="w-28 text-center py-1 px-4 border boborder-black bg-white rounded-md ml-auto self-start"
                         onClick={() => {
                             updateLoop(id, emptySamplerLoop());
                         }}

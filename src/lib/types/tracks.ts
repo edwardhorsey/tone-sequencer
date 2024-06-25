@@ -11,3 +11,10 @@ export enum InstrumentType {
     Synth = 'Synth',
     Sampler = 'Sampler',
 }
+
+export const TrackNameReadable = {
+    [TrackNameType.SynthA]: 'Synth A',
+    [TrackNameType.SynthB]: 'Synth B',
+    [TrackNameType.SynthC]: 'Synth C',
+    [TrackNameType.SamplerA]: 'Sampler A',
+};

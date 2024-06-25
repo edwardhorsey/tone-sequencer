@@ -74,6 +74,7 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
     tracks: initialiseTracks(),
     isPlaying: false,
     initialised: false,
+
     initialise: () => {
         if (typeof Window !== 'undefined') {
             Tone.Transport.cancel();
@@ -88,6 +89,7 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
             set((state) => ({ ...state, initialised: true }));
         }
     },
+
     start: async () => {
         if (Tone.context.state !== 'running') {
             await Tone.context.resume();
@@ -96,48 +98,43 @@ const useTrackStore = create<TrackStore>()((set, get) => ({
         Tone.Transport.start();
         set((state) => ({ ...state, isPlaying: true }));
     },
+
     stop: () => {
         Tone.Transport.stop();
         set((state) => ({ ...state, isPlaying: false }));
     },
+
     updateInstrument: (trackId: TrackNameType, config: Partial<SynthConfig> | Partial<SamplerConfig>) => {
-        set((state) => {
-            const tracks = [...state.tracks];
-            const trackToUpdate = tracks.find((track) => track.id === trackId);
+        const tracks = [...get().tracks];
+        const trackToUpdate = tracks.find((track) => track.id === trackId);
 
-            if (trackToUpdate) {
-                trackToUpdate.instrumentConfig = merge(trackToUpdate.instrumentConfig, config);
+        if (trackToUpdate) {
+            trackToUpdate.instrumentConfig = merge(trackToUpdate.instrumentConfig, config);
 
-                // Update Tone.js instruments
-                if (trackToUpdate.instrumentType === InstrumentType.Synth) {
-                    trackToUpdate.instrument.synth.set(trackToUpdate.instrumentConfig.synthOptions);
-                }
-
-                if (trackToUpdate.instrumentType === InstrumentType.Sampler) {
-                    trackToUpdate.instrument.sampler.set(trackToUpdate.instrumentConfig.samplerOptions);
-                }
-
-                trackToUpdate.instrument.gain.gain.rampTo(trackToUpdate.instrumentConfig.gain);
-
-                return { ...state, tracks };
+            // Update Tone.js instruments
+            if (trackToUpdate.instrumentType === InstrumentType.Synth) {
+                trackToUpdate.instrument.synth.set(trackToUpdate.instrumentConfig.synthOptions);
             }
 
-            return state;
-        });
+            if (trackToUpdate.instrumentType === InstrumentType.Sampler) {
+                trackToUpdate.instrument.sampler.set(trackToUpdate.instrumentConfig.samplerOptions);
+            }
+
+            trackToUpdate.instrument.gain.gain.rampTo(trackToUpdate.instrumentConfig.gain);
+
+            set((state) => ({ ...state, tracks }));
+        }
     },
+
     updateLoop: (trackId: TrackNameType, loop: Loop) => {
-        set((state) => {
-            const tracks = [...state.tracks];
-            const trackToUpdate = tracks.find((track: Track) => track.id === trackId);
+        const tracks = [...get().tracks];
+        const trackToUpdate = tracks.find((track) => track.id === trackId);
 
-            if (trackToUpdate) {
-                trackToUpdate.loop = loop;
+        if (trackToUpdate) {
+            trackToUpdate.loop = loop;
 
-                return { ...state, tracks };
-            }
-
-            return state;
-        });
+            set((state) => ({ ...state, tracks }));
+        }
     },
 }));
 

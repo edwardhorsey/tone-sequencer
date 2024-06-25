@@ -10,7 +10,7 @@ import { randomBetween } from '@lib/misc';
 import { muteSelector, trackSelector } from '@lib/selectors';
 import { generateRandomLoop } from '@lib/trackHelpers';
 import { SamplerConfig, SynthConfig } from '@lib/types/sequencer';
-import { TrackNameType } from '@lib/types/tracks';
+import { TrackNameReadable, TrackNameType } from '@lib/types/tracks';
 import useTrackStore from '@stores/useTrackStore';
 import { OmniOscillatorOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
@@ -51,11 +51,12 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
     }
 
     return (
-        <article className="flex flex-col gap-2 w-full mb-8">
-            <h2 className="mr-2 font-bold">{id}</h2>
+        <article className="flex flex-col gap-2 w-full mb-8 bg-zinc-100 p-4 rounded-md">
+            <h2 className="mr-2 font-bold">{TrackNameReadable[id]}</h2>
             <div className="flex justify-between">
                 <label>
                     <select
+                        className="border border-black rounded-md p-1"
                         defaultValue={instrumentConfig.synthOptions.oscillator?.type}
                         onChange={(event) => {
                             const value = event.target.value;
@@ -147,7 +148,7 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
 
                 <button
                     type="button"
-                    className="w-16"
+                    className="w-28 text-center py-1 px-4 border border-black bg-white rounded-md"
                     onClick={() => {
                         updateInstrument(id, {
                             gain: muted ? 0.9 : 0,
@@ -158,12 +159,12 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
                 </button>
             </div>
 
-            <div className="flex-1 flex pt-4 pl-14">
+            <div className="flex-1 flex gap-1 pt-4 pl-14">
                 {loop.map((step, idx, array) => {
                     return (
                         <div key={`${step}.${idx}`} className="flex flex-col">
                             <select
-                                className="flex justify-center items-center border w-14 h-8 p-1 text-xs"
+                                className="flex justify-center items-center border w-14 h-8 p-1 text-xs rounded-md"
                                 defaultValue={step[0]?.pitch ?? undefined}
                                 onChange={(event) => {
                                     const value = event.target.value;
@@ -181,7 +182,7 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
 
                 <div className="ml-auto">
                     <button
-                        className="ml-2"
+                        className="w-28 text-center py-1 px-4 border border-black bg-white rounded-md ml-2"
                         type="button"
                         onClick={() => {
                             const loop = generateRandomLoop(randomBetween(2, 5));

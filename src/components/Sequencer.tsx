@@ -7,8 +7,12 @@ function Sequencer(): JSX.Element {
 
     return (
         <div>
-            <div className="w-full flex mb-2">
-                <button type="button" className="p-4 pl-0" onClick={isPlaying ? stop : start}>
+            <div className="w-full flex mb-2 pt-6 pl-4">
+                <button
+                    type="button"
+                    className="w-28 text-center py-2 px-4 border bg-white border-black rounded-md"
+                    onClick={isPlaying ? stop : start}
+                >
                     {isPlaying ? 'Stop' : 'Start'}
                 </button>
             </div>
