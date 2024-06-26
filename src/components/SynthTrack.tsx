@@ -7,9 +7,17 @@ import {
     calculateSustainValueFromPercentage,
 } from '@lib/envelopeHelpers';
 import { randomBetween } from '@lib/misc';
-import { muteSelector, trackSelector } from '@lib/selectors';
+import {
+    muteSelector,
+    trackSelector,
+    oscillatorSelector,
+    attackSelector,
+    decaySelector,
+    sustainSelector,
+} from '@lib/selectors';
 import { generateRandomLoop } from '@lib/trackHelpers';
-import { SamplerConfig, SynthConfig } from '@lib/types/sequencer';
+import { isSynthConfig } from '@lib/typeGuards';
+
 import { TrackNameReadable, TrackNameType } from '@lib/types/tracks';
 import useTrackStore from '@stores/useTrackStore';
 import { OmniOscillatorOptions } from 'tone';
@@ -17,25 +25,49 @@ import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { OmniOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import shallow from 'zustand/shallow';
 
-const omniOscillatorTypes: OmniOscillatorType[] = [
-    'fatsine',
-    'fatsquare',
-    'fatsawtooth',
-    'fattriangle',
-    'fatcustom',
+type OscillatorTypeOptions =
+    //OmniFMTypeOscillatorOptions
+    | 'fmsine'
+    | 'fmsquare'
+    | 'fmsawtooth'
+    | 'fmtriangle'
+    //OmniAMTypeOscillatorOptions
+    | 'amsine'
+    | 'amsquare'
+    | 'amsawtooth'
+    | 'amtriangle'
+    //OmniFatTypeOscillatorOptions
+    | 'fatsine'
+    | 'fatsquare'
+    | 'fatsawtooth'
+    | 'fattriangle';
+
+const omniOscillatorTypes: OscillatorTypeOptions[] = [
     'fmsine',
     'fmsquare',
     'fmsawtooth',
     'fmtriangle',
+    'amsine',
+    'amsquare',
+    'amsawtooth',
+    'amtriangle',
+    'fatsine',
+    'fatsquare',
+    'fatsawtooth',
+    'fattriangle',
 ];
+
+export function isOscillatorType(type: string): type is OscillatorTypeOptions {
+    return omniOscillatorTypes.includes(type as OscillatorTypeOptions);
+}
+
+function generateRandomOscillator(): OmniOscillatorType {
+    return omniOscillatorTypes[Math.floor(Math.random() * omniOscillatorTypes.length)];
+}
 
 interface SynthTrackProps {
     id: TrackNameType;
     pitchOptions: JSX.Element;
-}
-
-function isSynthConfig(config: SynthConfig | SamplerConfig): config is SynthConfig {
-    return config.hasOwnProperty('synthOptions');
 }
 
 export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
@@ -45,6 +77,10 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
     );
     const { loop, instrumentConfig } = useTrackStore(trackSelector(id), shallow);
     const muted = useTrackStore(muteSelector(id), shallow);
+    const oscillator = useTrackStore(oscillatorSelector(id), shallow);
+    const attack = useTrackStore(attackSelector(id), shallow);
+    const decay = useTrackStore(decaySelector(id), shallow);
+    const sustain = useTrackStore(sustainSelector(id), shallow);
 
     if (!loop || !instrumentConfig || !isSynthConfig(instrumentConfig)) {
         return null;
@@ -52,22 +88,22 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
 
     return (
         <article className="flex flex-col gap-2 w-full mb-8 bg-zinc-100 p-4 rounded-md">
-            <h2 className="mr-2 font-bold">{TrackNameReadable[id]}</h2>
-            <div className="flex justify-between">
-                <label>
+            <h2 className="mr-2 font-bold mb-4">{TrackNameReadable[id]}</h2>
+            <div className="flex justify-between items-start">
+                <label className="flex gap-1 items-center">
                     <select
                         className="border border-black rounded-md p-1"
-                        defaultValue={instrumentConfig.synthOptions.oscillator?.type}
+                        value={oscillator}
                         onChange={(event) => {
                             const value = event.target.value;
 
-                            if (value) {
+                            if (isOscillatorType(value)) {
                                 updateInstrument(id, {
                                     synthOptions: {
                                         oscillator: {
                                             type: value,
                                         },
-                                    } as RecursivePartial<OmniOscillatorOptions>,
+                                    },
                                 });
                             }
                         }}
@@ -80,13 +116,11 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
                     </select>
                 </label>
 
-                <label>
+                <label className="flex gap-1 items-center">
                     <span>Attack</span>
                     <input
                         type="range"
-                        defaultValue={calculatePercentageFromAttackValue(
-                            Number(instrumentConfig.synthOptions?.envelope?.attack ?? 0.1),
-                        )}
+                        value={calculatePercentageFromAttackValue(Number(attack))}
                         onChange={(event) => {
                             const value = Number(event.target.value);
                             const attack = calculateAttackValueFromPercentage(value);
@@ -102,13 +136,11 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
                     />
                 </label>
 
-                <label>
+                <label className="flex gap-1 items-center">
                     <span>Decay</span>
                     <input
                         type="range"
-                        defaultValue={calculatePercentageFromDecayValue(
-                            Number(instrumentConfig.synthOptions?.envelope?.decay ?? 0.1),
-                        )}
+                        value={calculatePercentageFromDecayValue(Number(decay))}
                         onChange={(event) => {
                             const value = Number(event.target.value);
                             const decay = calculateDecayValueFromPercentage(value);
@@ -124,13 +156,11 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
                     />
                 </label>
 
-                <label>
+                <label className="flex gap-1 items-center">
                     <span>Sustain</span>
                     <input
                         type="range"
-                        defaultValue={calculatePercentageFromSustainValue(
-                            Number(instrumentConfig.synthOptions?.envelope?.sustain ?? 0.1),
-                        )}
+                        value={calculatePercentageFromSustainValue(Number(sustain))}
                         onChange={(event) => {
                             const value = Number(event.target.value);
                             const sustain = calculateSustainValueFromPercentage(value);
@@ -164,7 +194,7 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
                     return (
                         <div key={`${step}.${idx}`} className="flex flex-col">
                             <select
-                                className="flex justify-center items-center border w-14 h-8 p-1 text-xs rounded-md"
+                                className="flex justify-center items-center border border-black w-14 h-8 p-1 text-xs rounded-md"
                                 defaultValue={step[0]?.pitch ?? undefined}
                                 onChange={(event) => {
                                     const value = event.target.value;
@@ -186,8 +216,16 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
                         type="button"
                         onClick={() => {
                             const loop = generateRandomLoop(randomBetween(2, 5));
+                            const oscillator = generateRandomOscillator();
 
                             updateLoop(id, loop);
+                            updateInstrument(id, {
+                                synthOptions: {
+                                    oscillator: {
+                                        type: oscillator,
+                                    },
+                                } as RecursivePartial<OmniOscillatorOptions>,
+                            });
                         }}
                     >
                         Randomise

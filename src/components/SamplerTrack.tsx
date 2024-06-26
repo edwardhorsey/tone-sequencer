@@ -2,6 +2,7 @@ import { muteSelector, trackSelector } from '@lib/selectors';
 import { Loop } from '@lib/types/sequencer';
 import { TrackNameReadable, TrackNameType } from '@lib/types/tracks';
 import useTrackStore from '@stores/useTrackStore';
+import { Frequency } from 'tone/build/esm/core/type/Units';
 import shallow from 'zustand/shallow';
 
 function emptySamplerLoop(): Loop {
@@ -11,6 +12,12 @@ function emptySamplerLoop(): Loop {
 interface SamplerTrackProps {
     id: TrackNameType;
 }
+
+const ReadableSamplerFrequencyName: Record<Frequency, string> = {
+    C2: 'Kick',
+    D2: 'Snare',
+    E2: 'Hi-Hat',
+};
 
 export default function SamplerTrack({ id }: SamplerTrackProps) {
     const [updateInstrument, updateLoop] = useTrackStore(
@@ -47,7 +54,7 @@ export default function SamplerTrack({ id }: SamplerTrackProps) {
                         {['C2', 'D2', 'E2'].map((pitch, idx) => {
                             return (
                                 <span className="h-5" key={`labels-${pitch}.${idx}`}>
-                                    {pitch}
+                                    {ReadableSamplerFrequencyName[pitch]}
                                 </span>
                             );
                         })}
