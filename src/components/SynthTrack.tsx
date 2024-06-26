@@ -1,20 +1,5 @@
-import {
-    calculateAttackValueFromPercentage,
-    calculateDecayValueFromPercentage,
-    calculatePercentageFromAttackValue,
-    calculatePercentageFromDecayValue,
-    calculatePercentageFromSustainValue,
-    calculateSustainValueFromPercentage,
-} from '@lib/envelopeHelpers';
 import { randomBetween } from '@lib/misc';
-import {
-    muteSelector,
-    trackSelector,
-    oscillatorSelector,
-    attackSelector,
-    decaySelector,
-    sustainSelector,
-} from '@lib/selectors';
+import { muteSelector, trackSelector, oscillatorSelector } from '@lib/selectors';
 import { generateRandomLoop } from '@lib/trackHelpers';
 import { isSynthConfig } from '@lib/typeGuards';
 
@@ -24,6 +9,7 @@ import { OmniOscillatorOptions } from 'tone';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { OmniOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import shallow from 'zustand/shallow';
+import SynthEnvelopeControl from './SynthEnvelopeControl';
 
 type OscillatorTypeOptions =
     //OmniFMTypeOscillatorOptions
@@ -78,9 +64,6 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
     const { loop, instrumentConfig } = useTrackStore(trackSelector(id), shallow);
     const muted = useTrackStore(muteSelector(id), shallow);
     const oscillator = useTrackStore(oscillatorSelector(id), shallow);
-    const attack = useTrackStore(attackSelector(id), shallow);
-    const decay = useTrackStore(decaySelector(id), shallow);
-    const sustain = useTrackStore(sustainSelector(id), shallow);
 
     if (!loop || !instrumentConfig || !isSynthConfig(instrumentConfig)) {
         return null;
@@ -116,65 +99,11 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
                     </select>
                 </label>
 
-                <label className="flex gap-1 items-center">
-                    <span>Attack</span>
-                    <input
-                        type="range"
-                        value={calculatePercentageFromAttackValue(Number(attack))}
-                        onChange={(event) => {
-                            const value = Number(event.target.value);
-                            const attack = calculateAttackValueFromPercentage(value);
+                <SynthEnvelopeControl type="attack" id={id} />
 
-                            if (value >= 0) {
-                                updateInstrument(id, {
-                                    synthOptions: {
-                                        envelope: { attack },
-                                    },
-                                });
-                            }
-                        }}
-                    />
-                </label>
+                <SynthEnvelopeControl type="decay" id={id} />
 
-                <label className="flex gap-1 items-center">
-                    <span>Decay</span>
-                    <input
-                        type="range"
-                        value={calculatePercentageFromDecayValue(Number(decay))}
-                        onChange={(event) => {
-                            const value = Number(event.target.value);
-                            const decay = calculateDecayValueFromPercentage(value);
-
-                            if (value >= 0) {
-                                updateInstrument(id, {
-                                    synthOptions: {
-                                        envelope: { decay },
-                                    },
-                                });
-                            }
-                        }}
-                    />
-                </label>
-
-                <label className="flex gap-1 items-center">
-                    <span>Sustain</span>
-                    <input
-                        type="range"
-                        value={calculatePercentageFromSustainValue(Number(sustain))}
-                        onChange={(event) => {
-                            const value = Number(event.target.value);
-                            const sustain = calculateSustainValueFromPercentage(value);
-
-                            if (value >= 0) {
-                                updateInstrument(id, {
-                                    synthOptions: {
-                                        envelope: { sustain },
-                                    },
-                                });
-                            }
-                        }}
-                    />
-                </label>
+                <SynthEnvelopeControl type="sustain" id={id} />
 
                 <button
                     type="button"
