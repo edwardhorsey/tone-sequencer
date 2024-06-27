@@ -1,6 +1,6 @@
 import { Loop } from '@lib/types/sequencer';
 
-const pitches = ['B', 'A#', 'A', 'G#', 'G', 'F#', 'F', 'E', 'D#', 'D', 'C#', 'C'];
+const pitches = ['B', 'Bb', 'A', 'Ab', 'G', 'Gb', 'F', 'E', 'Eb', 'D', 'Db', 'C'];
 
 export const pitchesByOctaves: string[] = ['5', '4', '3', '2'].reduce((acc: string[], octave) => {
     acc.push(...pitches.map((pitch) => `${pitch}${octave}`));
