@@ -2,53 +2,38 @@ import { randomBetween } from '@lib/misc';
 import { muteSelector, trackSelector, oscillatorSelector } from '@lib/selectors';
 import { generateRandomLoop } from '@lib/trackHelpers';
 import { isSynthConfig } from '@lib/typeGuards';
+import SynthEnvelopeControl from '@components/SynthEnvelopeControl';
+import useTrackStore from '@stores/trackStore';
+import shallow from 'zustand/shallow';
 
 import { TrackNameReadable, TrackNameType } from '@lib/types/tracks';
-import useTrackStore from '@stores/useTrackStore';
-import { OmniOscillatorOptions } from 'tone';
-import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
-import { OmniOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
-import shallow from 'zustand/shallow';
-import SynthEnvelopeControl from './SynthEnvelopeControl';
 
-type OscillatorTypeOptions =
+const oscillatorOptions = [
     //OmniFMTypeOscillatorOptions
-    | 'fmsine'
-    | 'fmsquare'
-    | 'fmsawtooth'
-    | 'fmtriangle'
-    //OmniAMTypeOscillatorOptions
-    | 'amsine'
-    | 'amsquare'
-    | 'amsawtooth'
-    | 'amtriangle'
-    //OmniFatTypeOscillatorOptions
-    | 'fatsine'
-    | 'fatsquare'
-    | 'fatsawtooth'
-    | 'fattriangle';
-
-const omniOscillatorTypes: OscillatorTypeOptions[] = [
     'fmsine',
     'fmsquare',
     'fmsawtooth',
     'fmtriangle',
+    //OmniAMTypeOscillatorOptions
     'amsine',
     'amsquare',
     'amsawtooth',
     'amtriangle',
+    //OmniFatTypeOscillatorOptions
     'fatsine',
     'fatsquare',
     'fatsawtooth',
     'fattriangle',
-];
+] as const;
 
-export function isOscillatorType(type: string): type is OscillatorTypeOptions {
-    return omniOscillatorTypes.includes(type as OscillatorTypeOptions);
+type OscillatorType = typeof oscillatorOptions[number];
+
+export function isOscillatorType(type: string): type is OscillatorType {
+    return oscillatorOptions.includes(type as OscillatorType);
 }
 
-function generateRandomOscillator(): OmniOscillatorType {
-    return omniOscillatorTypes[Math.floor(Math.random() * omniOscillatorTypes.length)];
+function generateRandomOscillator(): OscillatorType {
+    return oscillatorOptions[Math.floor(Math.random() * oscillatorOptions.length)];
 }
 
 interface SynthTrackProps {
@@ -62,8 +47,8 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
         shallow,
     );
     const { loop, instrumentConfig } = useTrackStore(trackSelector(id), shallow);
-    const muted = useTrackStore(muteSelector(id), shallow);
-    const oscillator = useTrackStore(oscillatorSelector(id), shallow);
+    const muted = useTrackStore(muteSelector(id));
+    const oscillator = useTrackStore(oscillatorSelector(id));
 
     if (!loop || !instrumentConfig || !isSynthConfig(instrumentConfig)) {
         return null;
@@ -91,7 +76,7 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
                             }
                         }}
                     >
-                        {omniOscillatorTypes.map((oscType) => (
+                        {oscillatorOptions.map((oscType) => (
                             <option key={oscType} value={oscType}>
                                 {oscType}
                             </option>
@@ -153,7 +138,7 @@ export default function SynthTrack({ id, pitchOptions }: SynthTrackProps) {
                                     oscillator: {
                                         type: oscillator,
                                     },
-                                } as RecursivePartial<OmniOscillatorOptions>,
+                                },
                             });
                         }}
                     >
