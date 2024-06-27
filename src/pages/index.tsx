@@ -1,5 +1,5 @@
 // import Sequencer from '@components/Sequencer';
-import Layout from '@components/ui/Layout';
+import Layout from '@components/Layout';
 import dynamic from 'next/dynamic';
 
 const Sequencer = dynamic(() => import('@components/Sequencer'), {
