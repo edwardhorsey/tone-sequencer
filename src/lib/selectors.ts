@@ -21,7 +21,7 @@ export const muteSelector = (id: TrackNameType) => (state: TrackStore) => {
 export const oscillatorSelector = (id: TrackNameType) => (state: TrackStore) => {
     const track = state.tracks.find((track) => track.id === id);
 
-    if (!track || !isSynthConfig(track?.instrumentConfig)) {
+    if (!isSynthConfig(track?.instrumentConfig)) {
         throw new Error('Invalid synth config');
     }
 
@@ -31,7 +31,7 @@ export const oscillatorSelector = (id: TrackNameType) => (state: TrackStore) => 
 export const attackSelector = (id: TrackNameType) => (state: TrackStore) => {
     const track = state.tracks.find((track) => track.id === id);
 
-    if (!track || !isSynthConfig(track?.instrumentConfig)) {
+    if (!isSynthConfig(track?.instrumentConfig)) {
         throw new Error('Invalid synth config');
     }
 
@@ -41,7 +41,7 @@ export const attackSelector = (id: TrackNameType) => (state: TrackStore) => {
 export const decaySelector = (id: TrackNameType) => (state: TrackStore) => {
     const track = state.tracks.find((track) => track.id === id);
 
-    if (!track || !isSynthConfig(track?.instrumentConfig)) {
+    if (!isSynthConfig(track?.instrumentConfig)) {
         throw new Error('Invalid synth config');
     }
 
@@ -51,7 +51,7 @@ export const decaySelector = (id: TrackNameType) => (state: TrackStore) => {
 export const sustainSelector = (id: TrackNameType) => (state: TrackStore) => {
     const track = state.tracks.find((track) => track.id === id);
 
-    if (!track || !isSynthConfig(track?.instrumentConfig)) {
+    if (!isSynthConfig(track?.instrumentConfig)) {
         throw new Error('Invalid synth config');
     }
 
