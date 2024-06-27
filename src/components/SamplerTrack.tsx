@@ -24,10 +24,10 @@ export default function SamplerTrack({ id }: SamplerTrackProps) {
         (state) => [state.updateInstrument, state.updateLoop],
         shallow,
     );
-    const { loop, instrumentConfig } = useTrackStore(trackSelector(id), shallow);
+    const { loop } = useTrackStore(trackSelector(id), shallow);
     const muted = useTrackStore(muteSelector(id));
 
-    if (!loop || !instrumentConfig) {
+    if (!loop) {
         return null;
     }
 
