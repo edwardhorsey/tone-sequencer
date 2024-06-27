@@ -2,7 +2,6 @@ import { getPercentageFromEnvelopeValue, getEnvelopeValueFromPercentage } from '
 import { attackSelector, decaySelector, sustainSelector } from '@lib/selectors';
 import { TrackNameType } from '@lib/types/tracks';
 import useTrackStore from '@stores/trackStore';
-import shallow from 'zustand/shallow';
 
 interface SynthEnvelopeControlProps {
     type: 'attack' | 'decay' | 'sustain';
@@ -20,8 +19,8 @@ function getSelector(type: 'attack' | 'decay' | 'sustain') {
 }
 
 export default function SynthEnvelopeControl({ type, id }: SynthEnvelopeControlProps) {
-    const updateInstrument = useTrackStore((state) => state.updateInstrument, shallow);
-    const value = useTrackStore(getSelector(type)(id), shallow);
+    const updateInstrument = useTrackStore((state) => state.updateInstrument);
+    const value = useTrackStore(getSelector(type)(id));
 
     const readableName = type.charAt(0).toUpperCase() + type.slice(1);
 
