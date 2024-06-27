@@ -1,7 +1,7 @@
 import { getPercentageFromEnvelopeValue, getEnvelopeValueFromPercentage } from '@lib/envelopeHelpers';
 import { attackSelector, decaySelector, sustainSelector } from '@lib/selectors';
 import { TrackNameType } from '@lib/types/tracks';
-import useTrackStore from '@stores/useTrackStore';
+import useTrackStore from '@stores/trackStore';
 import shallow from 'zustand/shallow';
 
 interface SynthEnvelopeControlProps {

@@ -1,4 +1,4 @@
-import useTrackStore from '@stores/useTrackStore';
+import useTrackStore from '@stores/trackStore';
 import shallow from 'zustand/shallow';
 
 export default function StarStopButton() {

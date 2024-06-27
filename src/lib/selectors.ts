@@ -1,6 +1,6 @@
 import { TrackNameType } from '@lib/types/tracks';
-import { TrackStore } from '@stores/useTrackStore';
-import { isSynthConfig } from './typeGuards';
+import { TrackStore } from '@stores/trackStore';
+import { isSynthConfig } from '@lib/typeGuards';
 
 export const trackSelector = (id: TrackNameType) => (state: TrackStore) => {
     const track = state.tracks.find((track) => track.id === id);

@@ -2,7 +2,7 @@ import { PitchOptions } from '@components/PitchOptions';
 import SamplerTrack from '@components/SamplerTrack';
 import SynthTrack from '@components/SynthTrack';
 import { InstrumentType } from '@lib/types/tracks';
-import useTrackStore from '@stores/useTrackStore';
+import useTrackStore from '@stores/trackStore';
 import { useMemo } from 'react';
 import shallow from 'zustand/shallow';
 
