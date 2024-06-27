@@ -1,5 +1,5 @@
 import Tracks from '@components/Tracks';
-import StarStopButton from './StartStopButton';
+import StarStopButton from '@components/StartStopButton';
 
 function Sequencer(): JSX.Element {
     return (
